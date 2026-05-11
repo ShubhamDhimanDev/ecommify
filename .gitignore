@@ -1,0 +1,83 @@
+# =============================================================================
+# Ecommify Monorepo .gitignore
+# Covers: Laravel (api/), Next.js (store-front/), Next.js (admin-front/)
+# =============================================================================
+
+# -------------------------
+# OS & Editor
+# -------------------------
+.DS_Store
+Thumbs.db
+*.pem
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+
+# -------------------------
+# Node / JS (store-front & admin-front)
+# -------------------------
+node_modules/
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Next.js build output
+**/.next/
+**/out/
+**/build/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Testing / coverage
+coverage/
+
+# Vercel
+.vercel
+
+# -------------------------
+# Laravel (api/)
+# -------------------------
+api/vendor/
+api/node_modules/
+api/public/build/
+api/public/hot/
+api/public/storage/
+api/bootstrap/ssr/
+api/storage/*.key
+api/storage/pail/
+api/resources/js/actions
+api/resources/js/routes
+api/resources/js/wayfinder
+api/auth.json
+api/.phpactor.json
+api/.phpunit.result.cache
+api/.phpunit.cache/
+api/Homestead.json
+api/Homestead.yaml
+
+# -------------------------
+# Environment files
+# -------------------------
+.env
+.env.*
+!.env.example
+api/.env.backup
+api/.env.production
+
+# -------------------------
+# Logs
+# -------------------------
+*.log
+api/storage/logs/*.log
