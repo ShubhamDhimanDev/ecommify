@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 import {
   LayoutDashboard,
   Store,
@@ -22,21 +22,6 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { useStore } from "@/context/StoreContext";
 
-const nav = [
-  { href: "/dashboard",       label: "Overview",  icon: LayoutDashboard },
-  { href: "/dashboard/store", label: "My Store",  icon: Store },
-];
-
-const storeNav = [
-  { href: "/dashboard/categories", label: "Categories", icon: Boxes },
-  { href: "/dashboard/products", label: "Products", icon: Package },
-  { href: "/dashboard/orders", label: "Orders", icon: ShoppingCart },
-  { href: "/dashboard/customers", label: "Customers", icon: Users },
-  { href: "/dashboard/payments", label: "Payments", icon: CreditCard },
-  { href: "/dashboard/tags", label: "Tags", icon: Tags },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
-];
-
 const bottomNav = [
   { href: "/dashboard/profile",  label: "Profile",  icon: User },
   { href: "/dashboard/security", label: "Security", icon: Shield },
@@ -44,8 +29,23 @@ const bottomNav = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const params = useParams<{ slug?: string }>();
   const { user, logout } = useAuth();
-  const { stores } = useStore();
+  const { stores, activeStore } = useStore();
+
+  // Prefer slug from URL params, fall back to activeStore slug
+  const slug = params.slug ?? activeStore?.slug ?? "";
+  const base = slug ? `/${slug}` : "/dashboard";
+
+  const storeNav = [
+    { href: `${base}/categories`, label: "Categories", icon: Boxes },
+    { href: `${base}/products`,   label: "Products",   icon: Package },
+    { href: `${base}/orders`,     label: "Orders",     icon: ShoppingCart },
+    { href: `${base}/customers`,  label: "Customers",  icon: Users },
+    { href: `${base}/payments`,   label: "Payments",   icon: CreditCard },
+    { href: `${base}/tags`,       label: "Tags",       icon: Tags },
+    { href: `${base}/settings`,   label: "Settings",   icon: Settings },
+  ];
 
   return (
     <aside className="flex h-screen w-60 shrink-0 flex-col bg-zinc-950 border-r border-zinc-800">
@@ -62,9 +62,18 @@ export function Sidebar() {
 
       {/* Main nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
-        {nav.map(({ href, label, icon: Icon }) => (
-          <NavItem key={href} href={href} label={label} Icon={Icon} active={pathname.startsWith(href) && (href !== "/dashboard" || pathname === "/dashboard")} />
-        ))}
+        <NavItem
+          href={slug ? `/${slug}` : "/dashboard"}
+          label="Overview"
+          Icon={LayoutDashboard}
+          active={slug ? pathname === `/${slug}` : pathname === "/dashboard"}
+        />
+        <NavItem
+          href="/dashboard/store"
+          label="My Store"
+          Icon={Store}
+          active={pathname.startsWith("/dashboard/store")}
+        />
 
         {stores.length > 1 && (
           <NavItem

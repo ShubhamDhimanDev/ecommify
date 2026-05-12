@@ -63,11 +63,20 @@ export interface Product {
   name: string;
   sku: string;
   category_id: string | null;
+  parent_product_id?: string | null;
+  is_variant?: boolean;
+  parentProduct?: { id: string; name: string; sku: string } | null;
   category?: Pick<Category, "id" | "name" | "slug"> | null;
   price: string;
+  discount_type?: 'fixed' | 'percentage' | null;
+  discount_value?: string | null;
   stock: number;
   description: string | null;
   hs_code: string | null;
+  meta_title?: string | null;
+  meta_description?: string | null;
+  meta_keywords?: string[] | null;
+  specifications?: Record<string, string> | null;
   tags?: ProductTag[];
   images?: ProductImage[];
   variants?: ProductVariant[];
@@ -95,11 +104,16 @@ export interface ProductImage {
 
 export interface ProductVariant {
   id: string;
-  product_id: string;
+  parent_product_id: string;
   name: string;
   sku: string;
   price: string | null;
   stock: number;
+  description?: string | null;
+  meta_title?: string | null;
+  meta_description?: string | null;
+  meta_keywords?: string[] | null;
+  specifications?: Record<string, string> | null;
 }
 
 // ─── Pagination ────────────────────────────────────────────────────────────────

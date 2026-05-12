@@ -27,7 +27,7 @@ import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { Spinner } from "@/components/ui/Spinner";
 import { Table, TableHead, Th, TableBody, Tr, Td, TableEmpty } from "@/components/ui/Table";
-import { formatDate } from "@/lib/utils";
+import { formatAmount, formatDate } from "@/lib/utils";
 
 type VariantDraft = {
   id: string;
@@ -520,7 +520,7 @@ export default function ProductsPage() {
                   <Tr key={product.id}>
                     <Td>{product.name}</Td>
                     <Td>{product.sku}</Td>
-                    <Td>${Number(product.price).toFixed(2)}</Td>
+                    <Td>{formatAmount(product.price)}</Td>
                     <Td>{product.stock}</Td>
                     <Td>{product.variants?.length ?? 0}</Td>
                     <Td>{product.images?.length ?? 0}</Td>

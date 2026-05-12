@@ -136,6 +136,7 @@ Route::prefix('v1')->group(function () {
             Route::get('products', [ProductController::class, 'index'])->name('products.index');
             Route::post('products', [ProductController::class, 'store'])->name('products.store');
             Route::get('products/{id}', [ProductController::class, 'show'])->name('products.show')->whereUuid('id');
+            Route::post('products/{id}/variants', [ProductController::class, 'createVariant'])->name('products.variants.store')->whereUuid('id');
             Route::put('products/{id}', [ProductController::class, 'update'])->name('products.update')->whereUuid('id');
             Route::delete('products/{id}', [ProductController::class, 'destroy'])->name('products.destroy')->whereUuid('id');
 

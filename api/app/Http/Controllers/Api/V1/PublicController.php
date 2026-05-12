@@ -41,7 +41,7 @@ class PublicController extends Controller
             ->withoutGlobalScopes()
             ->with([
                 'images:id,product_id,image_url,media_type,storage_path,alt_text,sort_order,file_size,mime_type,disk',
-                'variants:id,product_id,name,sku,price,stock',
+                'variants:id,parent_product_id,name,sku,price,stock,description,meta_title,meta_description,meta_keywords,specifications',
                 'tags:id,product_id,tag_name',
             ])
             ->where('tenant_id', $store->id)
@@ -73,7 +73,7 @@ class PublicController extends Controller
             ->withoutGlobalScopes()
             ->with([
                 'images:id,product_id,image_url,media_type,storage_path,alt_text,sort_order,file_size,mime_type,disk',
-                'variants:id,product_id,name,sku,price,stock',
+                'variants:id,parent_product_id,name,sku,price,stock,description,meta_title,meta_description,meta_keywords,specifications',
                 'tags:id,product_id,tag_name',
             ])
             ->where('tenant_id', $store->id)

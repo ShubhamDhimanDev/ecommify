@@ -13,6 +13,12 @@ import type { ReactNode } from "react";
 const NO_STORE_EXEMPT = ["/dashboard/store/new", "/dashboard/profile", "/dashboard/security"];
 const MULTI_STORE_EXEMPT = ["/dashboard/store/select", "/dashboard/profile", "/dashboard/security"];
 
+// Paths under /{slug}/... — the [slug] sub-layout handles store selection for these
+const FIXED_DASHBOARD_PATHS = ["/dashboard/store", "/dashboard/profile", "/dashboard/security", "/dashboard/tenants"];
+function isSlugBasedPath(pathname: string): boolean {
+  return !pathname.startsWith("/dashboard");
+}
+
 function EmailVerificationBanner() {
   const { user } = useAuth();
   const [resending, setResending] = useState(false);
@@ -58,11 +64,13 @@ function DashboardShell({ children }: { children: ReactNode }) {
 
   const isNoStoreExempt = NO_STORE_EXEMPT.some((p) => pathname.startsWith(p));
   const isMultiStoreExempt = MULTI_STORE_EXEMPT.some((p) => pathname.startsWith(p));
+  // Slug-based pages handle their own store selection – don't redirect away from them
+  const isSlug = isSlugBasedPath(pathname);
 
   useEffect(() => {
     if (isLoading || storesLoading || !user) return;
 
-    if (stores.length === 0 && !isNoStoreExempt) {
+    if (stores.length === 0 && !isNoStoreExempt && !isSlug) {
       router.replace("/dashboard/store/new");
       return;
     }
@@ -73,13 +81,13 @@ function DashboardShell({ children }: { children: ReactNode }) {
       }
 
       if (pathname.startsWith("/dashboard/store/select")) {
-        router.replace("/dashboard");
+        router.replace(`/${stores[0].slug}`);
       }
 
       return;
     }
 
-    if (stores.length > 1 && !activeStore && !isMultiStoreExempt) {
+    if (stores.length > 1 && !activeStore && !isMultiStoreExempt && !isSlug) {
       router.replace("/dashboard/store/select");
     }
   }, [
@@ -90,6 +98,7 @@ function DashboardShell({ children }: { children: ReactNode }) {
     activeStore,
     isNoStoreExempt,
     isMultiStoreExempt,
+    isSlug,
     pathname,
     router,
     selectStore,

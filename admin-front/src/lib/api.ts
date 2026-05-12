@@ -261,11 +261,20 @@ export const productApi = {
         name: string;
         sku: string;
         category_id: string | null;
+        parent_product_id: string | null;
+        is_variant: boolean;
+        parentProduct?: { id: string; name: string; sku: string } | null;
         category?: { id: string; name: string; slug: string } | null;
         price: string;
+        discount_type: 'fixed' | 'percentage' | null;
+        discount_value: string | null;
         stock: number;
         description: string | null;
         hs_code: string | null;
+        meta_title: string | null;
+        meta_description: string | null;
+        meta_keywords: string[] | null;
+        specifications: Record<string, string> | null;
         tags?: Array<{ id: string; product_id: string; tag_name: string }>;
         images?: Array<{
           id: string;
@@ -281,11 +290,16 @@ export const productApi = {
         }>;
         variants?: Array<{
           id: string;
-          product_id: string;
+          parent_product_id: string;
           name: string;
           sku: string;
           price: string | null;
           stock: number;
+          description: string | null;
+          meta_title: string | null;
+          meta_description: string | null;
+          meta_keywords: string[] | null;
+          specifications: Record<string, string> | null;
         }>;
         created_at: string;
       }>;
@@ -302,11 +316,20 @@ export const productApi = {
         name: string;
         sku: string;
         category_id: string | null;
+        parent_product_id: string | null;
+        is_variant: boolean;
+        parentProduct?: { id: string; name: string; sku: string } | null;
         category?: { id: string; name: string; slug: string } | null;
         price: string;
+        discount_type: 'fixed' | 'percentage' | null;
+        discount_value: string | null;
         stock: number;
         description: string | null;
         hs_code: string | null;
+        meta_title: string | null;
+        meta_description: string | null;
+        meta_keywords: string[] | null;
+        specifications: Record<string, string> | null;
         tags: Array<{ id: string; product_id: string; tag_name: string }>;
         images: Array<{
           id: string;
@@ -322,11 +345,16 @@ export const productApi = {
         }>;
         variants: Array<{
           id: string;
-          product_id: string;
+          parent_product_id: string;
           name: string;
           sku: string;
           price: string | null;
           stock: number;
+          description: string | null;
+          meta_title: string | null;
+          meta_description: string | null;
+          meta_keywords: string[] | null;
+          specifications: Record<string, string> | null;
         }>;
         created_at: string;
       };
@@ -344,6 +372,10 @@ export const productApi = {
       stock?: number;
       description?: string | null;
       hs_code?: string | null;
+      meta_title?: string | null;
+      meta_description?: string | null;
+      meta_keywords?: string[] | null;
+      specifications?: Record<string, string> | null;
       tags?: string[];
       images?: Array<{
         image_url: string;
@@ -353,12 +385,6 @@ export const productApi = {
         mime_type?: string | null;
         disk?: string | null;
       }>;
-      variants?: Array<{
-        name: string;
-        sku: string;
-        price?: number | null;
-        stock?: number;
-      }>;
       }
   ) =>
     api.post<{
@@ -367,11 +393,17 @@ export const productApi = {
         name: string;
         sku: string;
         category_id: string | null;
+        parent_product_id: string | null;
+        is_variant: boolean;
         category?: { id: string; name: string; slug: string } | null;
         price: string;
         stock: number;
         description: string | null;
         hs_code: string | null;
+        meta_title: string | null;
+        meta_description: string | null;
+        meta_keywords: string[] | null;
+        specifications: Record<string, string> | null;
         tags: Array<{ id: string; product_id: string; tag_name: string }>;
         images: Array<{
           id: string;
@@ -387,11 +419,16 @@ export const productApi = {
         }>;
         variants: Array<{
           id: string;
-          product_id: string;
+          parent_product_id: string;
           name: string;
           sku: string;
           price: string | null;
           stock: number;
+          description: string | null;
+          meta_title: string | null;
+          meta_description: string | null;
+          meta_keywords: string[] | null;
+          specifications: Record<string, string> | null;
         }>;
         created_at: string;
       };
@@ -410,6 +447,10 @@ export const productApi = {
       stock?: number;
       description?: string | null;
       hs_code?: string | null;
+      meta_title?: string | null;
+      meta_description?: string | null;
+      meta_keywords?: string[] | null;
+      specifications?: Record<string, string> | null;
       tags?: string[];
       images?: Array<{
         image_url: string;
@@ -419,12 +460,6 @@ export const productApi = {
         mime_type?: string | null;
         disk?: string | null;
       }>;
-      variants?: Array<{
-        name: string;
-        sku: string;
-        price?: number | null;
-        stock?: number;
-      }>;
       }
   ) =>
     api.put<{
@@ -433,11 +468,17 @@ export const productApi = {
         name: string;
         sku: string;
         category_id: string | null;
+        parent_product_id: string | null;
+        is_variant: boolean;
         category?: { id: string; name: string; slug: string } | null;
         price: string;
         stock: number;
         description: string | null;
         hs_code: string | null;
+        meta_title: string | null;
+        meta_description: string | null;
+        meta_keywords: string[] | null;
+        specifications: Record<string, string> | null;
         tags: Array<{ id: string; product_id: string; tag_name: string }>;
         images: Array<{
           id: string;
@@ -453,15 +494,87 @@ export const productApi = {
         }>;
         variants: Array<{
           id: string;
-          product_id: string;
+          parent_product_id: string;
           name: string;
           sku: string;
           price: string | null;
           stock: number;
+          description: string | null;
+          meta_title: string | null;
+          meta_description: string | null;
+          meta_keywords: string[] | null;
+          specifications: Record<string, string> | null;
         }>;
         created_at: string;
       };
     }>(`/store/${encodeURIComponent(tenantSlug)}/products/${id}`, data),
+
+  createVariant: (
+    tenantSlug: string,
+    id: string,
+    data: FormData | {
+      sku: string;
+      name?: string;
+      category_id?: string | null;
+      price?: number | null;
+      stock?: number | null;
+      description?: string | null;
+      hs_code?: string | null;
+      meta_title?: string | null;
+      meta_description?: string | null;
+      meta_keywords?: string[] | null;
+      specifications?: Record<string, string> | null;
+      copy_images?: boolean;
+      copy_tags?: boolean;
+      tags?: string[];
+    }
+  ) =>
+    api.post<{
+      product: {
+        id: string;
+        name: string;
+        sku: string;
+        category_id: string | null;
+        parent_product_id: string | null;
+        is_variant: boolean;
+        category?: { id: string; name: string; slug: string } | null;
+        price: string;
+        stock: number;
+        description: string | null;
+        hs_code: string | null;
+        meta_title: string | null;
+        meta_description: string | null;
+        meta_keywords: string[] | null;
+        specifications: Record<string, string> | null;
+        tags: Array<{ id: string; product_id: string; tag_name: string }>;
+        images: Array<{
+          id: string;
+          product_id: string;
+          image_url: string;
+          media_type: "image" | "video";
+          storage_path: string | null;
+          alt_text: string | null;
+          sort_order: number;
+          file_size: number | null;
+          mime_type: string | null;
+          disk: string | null;
+        }>;
+        variants: Array<{
+          id: string;
+          parent_product_id: string;
+          name: string;
+          sku: string;
+          price: string | null;
+          stock: number;
+          description: string | null;
+          meta_title: string | null;
+          meta_description: string | null;
+          meta_keywords: string[] | null;
+          specifications: Record<string, string> | null;
+        }>;
+        created_at: string;
+      };
+    }>(`/store/${encodeURIComponent(tenantSlug)}/products/${id}/variants`, data),
 
   remove: (tenantSlug: string, id: string) =>
     api.delete<void>(`/store/${encodeURIComponent(tenantSlug)}/products/${id}`),
