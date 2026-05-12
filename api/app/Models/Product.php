@@ -9,11 +9,13 @@ use App\Traits\UUIDPrimary;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
     use UUIDPrimary;
     use HasMerchantScope;
+    use SoftDeletes;
 
     protected $fillable = [
         'id',

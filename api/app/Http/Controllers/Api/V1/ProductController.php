@@ -119,13 +119,13 @@ class ProductController extends Controller
         return response()->json(['product' => $product], 201);
     }
 
-    public function show(string $id): JsonResponse
+    public function show(string $tenant_slug, string $id): JsonResponse
     {
         $product = Product::query()->with(self::PRODUCT_RELATIONS)->findOrFail($id);
         return response()->json(['product' => $product]);
     }
 
-    public function update(Request $request, string $id): JsonResponse
+    public function update(Request $request, string $tenant_slug, string $id): JsonResponse
     {
         /** @var Tenant $tenant */
         $tenant = app(Tenant::class);
@@ -192,7 +192,7 @@ class ProductController extends Controller
         return response()->json(['product' => $product->fresh(self::PRODUCT_RELATIONS)]);
     }
 
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $tenant, string $id): JsonResponse
     {
         $product = Product::query()->findOrFail($id);
         $product->delete();

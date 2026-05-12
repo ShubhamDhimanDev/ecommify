@@ -7,11 +7,13 @@ namespace App\Models;
 use App\Traits\HasMerchantScope;
 use App\Traits\UUIDPrimary;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model
 {
     use UUIDPrimary;
     use HasMerchantScope;
+    use SoftDeletes;
 
     protected $fillable = [
         'id',
