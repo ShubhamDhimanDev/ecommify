@@ -1,24 +1,28 @@
+"use client";
+
 import Link from "next/link";
 import type { Product } from "@/lib/types/product";
+import { useCart } from "@/context/CartContext";
+import { ShoppingBag, Star } from "lucide-react";
 
 export function ProductCard({ product, storeSlug }: { product: Product; storeSlug?: string }) {
   const image = product.images?.[0]?.image_url || "https://via.placeholder.com/400x300?text=Product";
   const price = parseFloat(String(product.price ?? 0));
-  const rating = 4.5; // Placeholder rating
-  const reviewCount = 128; // Placeholder reviews
+  const rating = 4.5;
+  const reviewCount = 128;
+  const { addItem, isLoading } = useCart();
 
   return (
     <Link href={`/${storeSlug}/products/${product.id}`}>
-      <article className="group flex flex-col rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition">
-        {/* Image Container */}
-        <div className="relative overflow-hidden bg-gray-100 h-64">
+      <article className="group flex flex-col overflow-hidden rounded-2xl border border-outline-variant/70 bg-surface transition hover:-translate-y-1 hover:shadow-[0_16px_35px_rgba(15,15,15,0.08)]">
+        <div className="relative h-64 overflow-hidden bg-surface-low">
           <img
             src={image}
             alt={product.name}
             className="h-full w-full object-cover group-hover:scale-105 transition duration-300"
           />
           {product.stock && product.stock < 5 && (
-            <span className="absolute top-3 right-3 rounded-full bg-red-500 text-white text-xs font-bold px-3 py-1">
+            <span className="absolute right-3 top-3 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white">
               Only {product.stock} left
             </span>
           )}
@@ -29,38 +33,40 @@ export function ProductCard({ product, storeSlug }: { product: Product; storeSlu
           )}
         </div>
 
-        {/* Content */}
         <div className="flex flex-1 flex-col p-4">
-          <p className="text-xs font-medium text-blue-600 mb-1">{product.category_name || "Uncategorized"}</p>
-          <h3 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition">
+          <p className="mb-1 text-xs font-medium uppercase tracking-[0.12em] text-secondary">{product.category_name || "Uncategorized"}</p>
+          <h3 className="line-clamp-2 font-semibold text-foreground group-hover:text-secondary">
             {product.name}
           </h3>
 
-          {/* Rating */}
           <div className="mt-2 flex items-center gap-1">
-            <div className="flex">
+            <div className="flex items-center">
               {[...Array(5)].map((_, i) => (
-                <span key={i} className={i < Math.floor(rating) ? "text-yellow-400" : "text-gray-300"}>
-                  ★
-                </span>
+                <Star key={i} className={`h-3.5 w-3.5 ${i < Math.floor(rating) ? "fill-amber-400 text-amber-400" : "text-outline-variant"}`} />
               ))}
             </div>
-            <span className="text-xs text-gray-500">({reviewCount})</span>
+            <span className="text-xs text-secondary">({reviewCount})</span>
           </div>
 
-          {/* Description */}
-          <p className="mt-2 text-sm text-gray-600 line-clamp-2">{product.description || "No description available"}</p>
+          <p className="mt-2 line-clamp-2 text-sm text-secondary">{product.description || "No description available"}</p>
 
-          {/* Price and Button */}
           <div className="mt-auto flex items-center justify-between pt-4">
             <div>
-              <span className="text-lg font-bold text-gray-900">${price.toFixed(2)}</span>
+              <span className="text-lg font-bold text-foreground">${price.toFixed(2)}</span>
             </div>
             <button
+              type="button"
               disabled={product.stock === 0}
-              className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
+              onClick={(event) => {
+                event.preventDefault();
+                addItem(product, 1).catch((error) => {
+                  console.error("Failed to add item to cart", error);
+                });
+              }}
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-on-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              Add to Cart
+              <ShoppingBag className="h-3.5 w-3.5" />
+              {isLoading ? "Adding" : "Add"}
             </button>
           </div>
         </div>

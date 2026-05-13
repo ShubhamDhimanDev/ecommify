@@ -683,3 +683,47 @@ export const orderApi = {
   updateStatus: (tenantSlug: string, id: string, data: { status: string; note?: string }) =>
     api.patch<{ order: unknown }>(`/store/${encodeURIComponent(tenantSlug)}/orders/${id}/status`, data),
 };
+
+// ─── Payment Gateway endpoints ────────────────────────────────────────────────
+
+import type { StorePaymentGateway, PaymentGateway } from "@/lib/types";
+
+export const paymentGatewayApi = {
+  // List connected payment gateways for current store
+  list: (slug: string) =>
+    api.get<{
+      data: StorePaymentGateway[];
+    }>(`/store/${slug}/payment-gateways`),
+
+  // Get a specific payment gateway configuration
+  detail: (slug: string, gatewayName: PaymentGateway) =>
+    api.get<{
+      gateway: StorePaymentGateway;
+    }>(`/store/${slug}/payment-gateways/${gatewayName}`),
+
+  // Initiate OAuth connection flow
+  initiateConnection: (slug: string, gatewayName: PaymentGateway) =>
+    api.post<{
+      authorization_url: string;
+    }>(`/store/${slug}/payment-gateways/authorize`, { gateway: gatewayName }),
+
+  // Handle OAuth callback
+  handleCallback: (slug: string, gatewayName: PaymentGateway, code: string) =>
+    api.post<{
+      message: string;
+      gateway: StorePaymentGateway;
+    }>(`/store/${slug}/payment-gateways/callback`, { gateway: gatewayName, code }),
+
+  // Disconnect a payment gateway
+  disconnect: (slug: string, gatewayName: PaymentGateway) =>
+    api.delete<{
+      message: string;
+    }>(`/store/${slug}/payment-gateways/${gatewayName}`),
+
+  // Test the gateway connection
+  test: (slug: string, gatewayName: PaymentGateway) =>
+    api.post<{
+      success: boolean;
+      message: string;
+    }>(`/store/${slug}/payment-gateways/${gatewayName}/test`, {}),
+};

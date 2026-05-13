@@ -6,6 +6,7 @@ import { Placeholder } from "@/components/ui/Placeholder";
 import { useParams } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { resolveTheme, themeToCssVars } from "@/lib/theme/defaultTheme";
 
 export default function StoreLayout({
   children,
@@ -38,8 +39,10 @@ export default function StoreLayout({
     return <Placeholder title="Store Not Available" />;
   }
 
+  const resolvedTheme = resolveTheme(store.theme ?? store.settings?.theme);
+
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex min-h-screen flex-col" style={themeToCssVars(resolvedTheme)}>
       <Header storeSlug={storeSlug} />
       <main className="flex-1">{children}</main>
       <Footer storeSlug={storeSlug} />

@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\V1\Auth\TwoFactorController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\PaymentController;
+use App\Http\Controllers\Api\V1\PaymentGatewayController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\PublicController;
 use App\Http\Controllers\Api\V1\Merchant\StoreController;
@@ -171,6 +172,16 @@ Route::prefix('v1')->group(function () {
             Route::post('payments', [PaymentController::class, 'store'])->name('payments.store');
             Route::get('payments/{id}', [PaymentController::class, 'show'])->name('payments.show')->whereUuid('id');
             Route::post('payments/{id}/refund', [PaymentController::class, 'refund'])->name('payments.refund')->whereUuid('id');
+
+            // Payment Gateways (OAuth connections)
+            Route::prefix('payment-gateways')->name('payment-gateways.')->group(function () {
+                Route::get('/', [PaymentGatewayController::class, 'index'])->name('index');
+                Route::get('{gateway}', [PaymentGatewayController::class, 'show'])->name('show');
+                Route::post('authorize', [PaymentGatewayController::class, 'authorize'])->name('authorize');
+                Route::post('callback', [PaymentGatewayController::class, 'callback'])->name('callback');
+                Route::delete('{gateway}', [PaymentGatewayController::class, 'disconnect'])->name('disconnect');
+                Route::post('{gateway}/test', [PaymentGatewayController::class, 'test'])->name('test');
+            });
 
             // Notifications (stub)
             Route::post('notifications/send', [NotificationController::class, 'send'])->name('notifications.send');

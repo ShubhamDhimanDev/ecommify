@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { productApi } from "@/lib/api/client";
 import { useCart } from "@/context/CartContext";
 import type { Product } from "@/lib/types/product";
+import { ShieldCheck, Star, Truck, Undo2 } from "lucide-react";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -29,7 +30,7 @@ export default function ProductDetailPage() {
     setLoading(true);
     try {
       const data = await productApi.getById(storeSlug, productId);
-      setProduct((data as any).product || null);
+      setProduct(data || null);
     } catch (error) {
       console.error("Failed to load product:", error);
     } finally {
@@ -61,7 +62,7 @@ export default function ProductDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-gray-500">Loading product...</p>
+        <p className="text-secondary">Loading product...</p>
       </div>
     );
   }
@@ -69,7 +70,7 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-20 text-center">
-        <p className="text-gray-500">Product not found</p>
+        <p className="text-secondary">Product not found</p>
       </div>
     );
   }
@@ -80,9 +81,8 @@ export default function ProductDetailPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
       <div className="grid gap-12 md:grid-cols-2">
-        {/* Images */}
         <div>
-          <div className="mb-4 rounded-lg border border-gray-200 bg-gray-50 overflow-hidden">
+          <div className="mb-4 overflow-hidden rounded-2xl border border-outline-variant bg-surface-low">
             <img
               src={mainImage}
               alt={product.name}
@@ -95,8 +95,8 @@ export default function ProductDetailPage() {
                 <button
                   key={idx}
                   onClick={() => setSelectedImage(idx)}
-                  className={`rounded-lg border-2 overflow-hidden ${
-                    selectedImage === idx ? "border-blue-500" : "border-gray-200"
+                  className={`overflow-hidden rounded-lg border-2 ${
+                    selectedImage === idx ? "border-primary" : "border-outline-variant"
                   }`}
                 >
                   <img
@@ -110,51 +110,45 @@ export default function ProductDetailPage() {
           )}
         </div>
 
-        {/* Details */}
         <div>
           <div className="mb-4">
-            <p className="text-sm font-medium text-blue-600 mb-2">{product.category_name}</p>
-            <h1 className="text-4xl font-bold text-gray-900">{product.name}</h1>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-secondary">{product.category_name || "Category"}</p>
+            <h1 className="display-title text-5xl text-foreground">{product.name}</h1>
           </div>
 
-          {/* Rating */}
           <div className="mb-6 flex items-center gap-3">
             <div className="flex gap-1">
               {[...Array(5)].map((_, i) => (
-                <span key={i} className="text-xl text-yellow-400">★</span>
+                <Star key={i} className="h-5 w-5 fill-amber-400 text-amber-400" />
               ))}
             </div>
-            <span className="text-sm text-gray-600">(128 reviews)</span>
+            <span className="text-sm text-secondary">(128 reviews)</span>
           </div>
 
-          {/* Price */}
           <div className="mb-6">
-            <span className="text-4xl font-bold text-gray-900">${parseFloat(String(product.price ?? 0)).toFixed(2)}</span>
+            <span className="text-4xl font-bold text-foreground">${parseFloat(String(product.price ?? 0)).toFixed(2)}</span>
           </div>
 
-          {/* Description */}
-          <p className="mb-6 text-gray-600 leading-relaxed">
+          <p className="mb-6 leading-relaxed text-secondary">
             {product.description || "No description available for this product."}
           </p>
 
-          {/* SKU */}
           {product.sku && (
             <div className="mb-6 flex gap-4">
-              <span className="text-sm text-gray-600">SKU: <strong>{product.sku}</strong></span>
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-secondary">SKU: <strong>{product.sku}</strong></span>
+              <span className="text-sm text-secondary">
                 Stock: <strong>{product.stock || 0} available</strong>
               </span>
             </div>
           )}
 
-          {/* Add to Cart */}
           <div className="mb-8 space-y-4">
             <div className="flex items-center gap-4">
-              <label className="text-sm font-medium text-gray-700">Quantity:</label>
-              <div className="flex items-center border border-gray-300 rounded-lg">
+              <label className="text-sm font-medium text-secondary">Quantity:</label>
+              <div className="flex items-center rounded-lg border border-outline-variant">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-4 py-2 text-gray-600 hover:bg-gray-100"
+                  className="px-4 py-2 text-secondary hover:bg-surface-low"
                   disabled={quantity <= 1}
                 >
                   −
@@ -162,7 +156,7 @@ export default function ProductDetailPage() {
                 <span className="w-12 text-center">{quantity}</span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="px-4 py-2 text-gray-600 hover:bg-gray-100"
+                  className="px-4 py-2 text-secondary hover:bg-surface-low"
                   disabled={product.stock === 0}
                 >
                   +
@@ -184,52 +178,50 @@ export default function ProductDetailPage() {
               <button
                 onClick={handleAddToCart}
                 disabled={product.stock === 0 || addingToCart || cartLoading}
-                className="flex-1 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
+                className="flex-1 rounded-lg bg-primary px-6 py-3 font-semibold text-on-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {addingToCart ? "Adding..." : "Add to Cart"}
               </button>
-              <button className="flex-1 rounded-lg border border-gray-300 px-6 py-3 font-semibold text-gray-700 hover:bg-gray-50 transition">
+              <button className="flex-1 rounded-lg border border-outline-variant px-6 py-3 font-semibold text-secondary hover:bg-surface-low">
                 ♥ Wishlist
               </button>
             </div>
           </div>
 
-          {/* Shipping Info */}
-          <div className="space-y-3 border-t pt-6">
+          <div className="space-y-3 border-t border-outline-variant pt-6">
             <div className="flex gap-3">
-              <span className="text-2xl">🚚</span>
+              <Truck className="h-6 w-6 text-secondary" />
               <div>
-                <p className="font-semibold text-gray-900">Free Shipping</p>
-                <p className="text-sm text-gray-600">On orders over $50</p>
+                <p className="font-semibold text-foreground">Free Shipping</p>
+                <p className="text-sm text-secondary">On orders over $50</p>
               </div>
             </div>
             <div className="flex gap-3">
-              <span className="text-2xl">🛡️</span>
+              <ShieldCheck className="h-6 w-6 text-secondary" />
               <div>
-                <p className="font-semibold text-gray-900">Secure Payment</p>
-                <p className="text-sm text-gray-600">100% protected transaction</p>
+                <p className="font-semibold text-foreground">Secure Payment</p>
+                <p className="text-sm text-secondary">100% protected transaction</p>
               </div>
             </div>
             <div className="flex gap-3">
-              <span className="text-2xl">↩️</span>
+              <Undo2 className="h-6 w-6 text-secondary" />
               <div>
-                <p className="font-semibold text-gray-900">Easy Returns</p>
-                <p className="text-sm text-gray-600">30-day money back guarantee</p>
+                <p className="font-semibold text-foreground">Easy Returns</p>
+                <p className="text-sm text-secondary">30-day money back guarantee</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Related Products Placeholder */}
-      <div className="mt-16 border-t pt-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Products</h2>
+      <div className="mt-16 border-t border-outline-variant pt-12">
+        <h2 className="mb-6 text-2xl font-bold text-foreground">Related Products</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="rounded-lg border border-gray-200 bg-white p-4">
-              <div className="mb-4 h-40 bg-gray-100 rounded-lg" />
-              <p className="font-semibold text-gray-900">Related Product {i + 1}</p>
-              <p className="text-lg font-bold text-gray-900 mt-2">$99.99</p>
+            <div key={i} className="rounded-lg border border-outline-variant bg-surface p-4">
+              <div className="mb-4 h-40 rounded-lg bg-surface-low" />
+              <p className="font-semibold text-foreground">Related Product {i + 1}</p>
+              <p className="mt-2 text-lg font-bold text-foreground">$99.99</p>
             </div>
           ))}
         </div>

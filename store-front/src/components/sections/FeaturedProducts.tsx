@@ -1,20 +1,53 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { ProductGrid } from "@/components/product/ProductGrid";
+import { productApi } from "@/lib/api/client";
 import type { Product } from "@/lib/types/product";
 
-const PLACEHOLDER_PRODUCTS: Product[] = [
-  { id: "1", name: "Starter Product", price: 19.99, description: "Placeholder" },
-  { id: "2", name: "Featured Product", price: 39.99, description: "Placeholder" },
-  { id: "3", name: "Popular Product", price: 29.99, description: "Placeholder" },
-];
-
 export function FeaturedProducts() {
+  const params = useParams();
+  const storeSlug = params?.storeSlug as string | undefined;
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadProducts() {
+      if (!storeSlug) {
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+
+      try {
+        const list = await productApi.list(storeSlug, { per_page: 8 });
+        setProducts(list.slice(0, 8));
+      } catch (error) {
+        console.error("Failed to load featured products", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadProducts();
+  }, [storeSlug]);
+
   return (
     <section className="space-y-4">
       <div>
-        <h2 className="text-xl font-semibold text-zinc-900">Featured Products</h2>
-        <p className="text-sm text-zinc-500">Preview content for Phase 1.</p>
+        <h2 className="display-title text-3xl text-foreground">Featured Products</h2>
+        <p className="text-sm text-secondary">Live inventory from your tenant APIs.</p>
       </div>
-      <ProductGrid products={PLACEHOLDER_PRODUCTS} />
+
+      {!storeSlug ? (
+        <div className="section-shell p-12 text-center text-secondary">Open a store slug route to preview products.</div>
+      ) : isLoading ? (
+        <div className="section-shell p-12 text-center text-secondary">Loading products...</div>
+      ) : (
+        <ProductGrid products={products} storeSlug={storeSlug} />
+      )}
     </section>
   );
 }

@@ -2,16 +2,15 @@
 
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useStore } from "@/context/StoreContext";
 import { productApi, categoryApi } from "@/lib/api/client";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import type { Product, Category } from "@/lib/types/product";
+import { SlidersHorizontal } from "lucide-react";
 
 export default function StoreProductsPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const storeSlug = params?.storeSlug as string;
-  const { store } = useStore();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -32,14 +31,14 @@ export default function StoreProductsPage() {
     try {
       // Load categories
       const categoriesData = await categoryApi.list(storeSlug);
-      setCategories((categoriesData as any).categories || []);
+      setCategories(categoriesData);
 
       // Load products
       const filters: Record<string, unknown> = {};
       if (selectedCategory) filters.category_id = selectedCategory;
 
       const productsData = await productApi.list(storeSlug, filters);
-      let productsList = ((productsData as any).data || []) as Product[];
+      let productsList = productsData as Product[];
 
       // Sort products
       switch (sortBy) {
@@ -64,27 +63,27 @@ export default function StoreProductsPage() {
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8">
-      {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Shop All Products</h1>
-        <p className="text-gray-600">Browse our complete collection of quality items</p>
+        <h1 className="display-title mb-2 text-4xl text-foreground">Shop All Products</h1>
+        <p className="text-secondary">Browse our complete collection of quality items</p>
       </div>
 
       <div className="grid gap-8 md:grid-cols-4">
-        {/* Sidebar Filters */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 h-fit">
-          <h2 className="font-bold text-gray-900 mb-4">Filters</h2>
+        <div className="section-shell h-fit p-6">
+          <h2 className="mb-4 inline-flex items-center gap-2 font-bold text-foreground">
+            <SlidersHorizontal className="h-4 w-4" />
+            Filters
+          </h2>
 
-          {/* Categories */}
           <div className="mb-6">
-            <h3 className="font-semibold text-gray-900 mb-3">Categories</h3>
+            <h3 className="mb-3 font-semibold text-foreground">Categories</h3>
             <div className="space-y-2">
               <button
                 onClick={() => setSelectedCategory(null)}
                 className={`block w-full text-left px-3 py-2 rounded-lg transition ${
                   !selectedCategory
-                    ? "bg-blue-100 text-blue-600 font-medium"
-                    : "text-gray-700 hover:bg-gray-50"
+                    ? "bg-surface-container text-foreground font-medium"
+                    : "text-secondary hover:bg-surface-low"
                 }`}
               >
                 All Products
@@ -95,8 +94,8 @@ export default function StoreProductsPage() {
                   onClick={() => setSelectedCategory(cat.id)}
                   className={`block w-full text-left px-3 py-2 rounded-lg transition ${
                     selectedCategory === cat.id
-                      ? "bg-blue-100 text-blue-600 font-medium"
-                      : "text-gray-700 hover:bg-gray-50"
+                      ? "bg-surface-container text-foreground font-medium"
+                      : "text-secondary hover:bg-surface-low"
                   }`}
                 >
                   {cat.name}
@@ -105,38 +104,34 @@ export default function StoreProductsPage() {
             </div>
           </div>
 
-          {/* Price Range */}
           <div className="mb-6">
-            <h3 className="font-semibold text-gray-900 mb-3">Price Range</h3>
+            <h3 className="mb-3 font-semibold text-foreground">Price Range</h3>
             <div className="space-y-2">
               {["Under $50", "$50 - $100", "$100 - $200", "Over $200"].map((range) => (
                 <label key={range} className="flex items-center gap-2">
-                  <input type="checkbox" className="rounded border-gray-300" />
-                  <span className="text-sm text-gray-700">{range}</span>
+                  <input type="checkbox" className="rounded border-outline" />
+                  <span className="text-sm text-secondary">{range}</span>
                 </label>
               ))}
             </div>
           </div>
 
-          {/* Stock Status */}
           <div>
-            <h3 className="font-semibold text-gray-900 mb-3">Availability</h3>
+            <h3 className="mb-3 font-semibold text-foreground">Availability</h3>
             <label className="flex items-center gap-2">
-              <input type="checkbox" className="rounded border-gray-300" defaultChecked />
-              <span className="text-sm text-gray-700">In Stock Only</span>
+              <input type="checkbox" className="rounded border-outline" defaultChecked />
+              <span className="text-sm text-secondary">In Stock Only</span>
             </label>
           </div>
         </div>
 
-        {/* Products */}
         <div className="md:col-span-3">
-          {/* Toolbar */}
           <div className="mb-6 flex items-center justify-between">
-            <p className="text-sm text-gray-600">Showing {products.length} products</p>
+            <p className="text-sm text-secondary">Showing {products.length} products</p>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900"
+              className="rounded-lg border border-outline-variant bg-surface px-4 py-2 text-foreground"
             >
               <option value="newest">Newest</option>
               <option value="price-low">Price: Low to High</option>
@@ -145,10 +140,9 @@ export default function StoreProductsPage() {
             </select>
           </div>
 
-          {/* Product Grid */}
           {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <p className="text-gray-500">Loading products...</p>
+            <div className="section-shell flex items-center justify-center py-12">
+              <p className="text-secondary">Loading products...</p>
             </div>
           ) : (
             <ProductGrid products={products} storeSlug={storeSlug} />

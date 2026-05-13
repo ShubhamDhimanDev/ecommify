@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LUXE - Account Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&amp;family=Playfair+Display:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary-fixed": "#e5e2e1",
+                      "on-error-container": "#93000a",
+                      "surface-container-low": "#f7f3f2",
+                      "inverse-surface": "#313030",
+                      "on-primary-container": "#858383",
+                      "on-tertiary-fixed": "#1c1b1a",
+                      "secondary": "#585f6c",
+                      "on-surface-variant": "#444748",
+                      "on-tertiary-container": "#868382",
+                      "surface-variant": "#e5e2e1",
+                      "surface-dim": "#ddd9d8",
+                      "on-primary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-fixed-dim": "#c8c6c5",
+                      "on-secondary-fixed-variant": "#404754",
+                      "on-surface": "#1c1b1b",
+                      "surface-bright": "#fdf8f8",
+                      "surface-container-high": "#ebe7e6",
+                      "secondary-container": "#dce2f3",
+                      "on-error": "#ffffff",
+                      "primary": "#000000",
+                      "surface-tint": "#5f5e5e",
+                      "tertiary": "#000000",
+                      "error": "#ba1a1a",
+                      "error-container": "#ffdad6",
+                      "secondary-fixed-dim": "#c0c7d6",
+                      "tertiary-fixed": "#e6e2df",
+                      "tertiary-fixed-dim": "#cac6c4",
+                      "primary-container": "#1c1b1b",
+                      "surface": "#fdf8f8",
+                      "tertiary-container": "#1c1b1a",
+                      "on-secondary": "#ffffff",
+                      "surface-container-highest": "#e5e2e1",
+                      "on-primary-fixed": "#1c1b1b",
+                      "on-primary-fixed-variant": "#474746",
+                      "on-tertiary-fixed-variant": "#484645",
+                      "on-secondary-fixed": "#151c27",
+                      "on-secondary-container": "#5e6572",
+                      "secondary-fixed": "#dce2f3",
+                      "inverse-on-surface": "#f4f0ef",
+                      "inverse-primary": "#c8c6c5",
+                      "on-tertiary": "#ffffff",
+                      "background": "#fdf8f8",
+                      "on-background": "#1c1b1b",
+                      "surface-container": "#f1edec",
+                      "outline-variant": "#c4c7c7",
+                      "outline": "#747878"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "section-gap-lg": "120px",
+                      "base": "8px",
+                      "container-max": "1440px",
+                      "section-gap-sm": "64px",
+                      "margin-desktop": "64px",
+                      "margin-mobile": "16px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "body-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-caps": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "headline-sm": [
+                              "Playfair Display"
+                      ],
+                      "display-lg": [
+                              "Playfair Display"
+                      ],
+                      "button": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "display-lg-mobile": [
+                              "Playfair Display"
+                      ],
+                      "headline-md": [
+                              "Playfair Display"
+                      ],
+                      "body-md": [
+                              "Plus Jakarta Sans"
+                      ]
+              },
+              "fontSize": {
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "0.1em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-sm": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "64px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "button": [
+                              "14px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-lg-mobile": [
+                              "40px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen flex flex-col pt-20">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-40 bg-surface dark:bg-on-background transition-colors duration-300">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-20 max-w-container-max mx-auto">
+<!-- Mobile Menu Toggle -->
+<button class="md:hidden text-primary dark:text-primary-fixed focus:outline-none">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<!-- Navigation Links (Desktop) -->
+<nav class="hidden md:flex space-x-gutter">
+<a class="font-label-caps text-label-caps text-on-surface-variant dark:text-on-primary-container pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300" href="#">Shop All</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant dark:text-on-primary-container pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300" href="#">New Arrivals</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant dark:text-on-primary-container pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300" href="#">Collections</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant dark:text-on-primary-container pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300" href="#">About</a>
+</nav>
+<!-- Brand Logo -->
+<div class="flex-shrink-0 absolute left-1/2 transform -translate-x-1/2 md:static md:transform-none">
+<a class="font-display-lg-mobile text-display-lg-mobile tracking-tighter text-primary dark:text-primary-fixed" href="#">LUXE</a>
+</div>
+<!-- Trailing Icons -->
+<div class="flex items-center space-x-6 text-primary dark:text-primary-fixed">
+<button class="hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 hover:opacity-80 hover:scale-[0.98]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">search</span>
+</button>
+<button class="hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 hover:opacity-80 hover:scale-[0.98]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">favorite</span>
+</button>
+<button class="text-primary dark:text-primary-fixed border-b border-primary dark:border-primary-fixed pb-1 hover:opacity-80 hover:scale-[0.98] transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">person</span>
+</button>
+<button class="hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 hover:opacity-80 hover:scale-[0.98]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">shopping_bag</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-section-gap-sm md:py-section-gap-lg">
+<div class="flex flex-col md:flex-row gap-gutter">
+<!-- Sidebar Navigation -->
+<aside class="w-full md:w-64 flex-shrink-0 mb-8 md:mb-0">
+<div class="sticky top-32">
+<h2 class="font-headline-sm text-headline-sm text-primary mb-8 border-b border-surface-container-highest pb-4">My Account</h2>
+<nav class="flex flex-col space-y-4">
+<a class="font-body-md text-body-md text-primary font-medium border-l-2 border-primary pl-4 transition-all" href="#orders">Orders</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary pl-4 border-l-2 border-transparent transition-all" href="#profile">Profile</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary pl-4 border-l-2 border-transparent transition-all" href="#addresses">Addresses</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary pl-4 border-l-2 border-transparent transition-all mt-8" href="#logout">Logout</a>
+</nav>
+</div>
+</aside>
+<!-- Dashboard Content Area -->
+<div class="flex-grow w-full">
+<!-- Orders View -->
+<section class="mb-section-gap-sm" id="orders">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-6">Recent Orders</h3>
+<div class="bg-surface-container-lowest p-6 md:p-8 rounded-DEFAULT">
+<!-- Table Wrapper for scrolling on small screens -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-surface-container-highest">
+<th class="font-label-caps text-label-caps text-on-surface-variant py-4 pr-4 font-semibold">Order ID</th>
+<th class="font-label-caps text-label-caps text-on-surface-variant py-4 px-4 font-semibold">Date</th>
+<th class="font-label-caps text-label-caps text-on-surface-variant py-4 px-4 font-semibold">Status</th>
+<th class="font-label-caps text-label-caps text-on-surface-variant py-4 px-4 font-semibold text-right">Total</th>
+<th class="font-label-caps text-label-caps text-on-surface-variant py-4 pl-4 font-semibold text-right">Action</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-surface-container hover:bg-surface transition-colors">
+<td class="font-body-md text-body-md text-primary py-4 pr-4">#LX-90210</td>
+<td class="font-body-md text-body-md text-on-surface-variant py-4 px-4">Oct 24, 2024</td>
+<td class="font-body-md text-body-md py-4 px-4">
+<span class="inline-flex items-center px-2 py-1 rounded-sm text-xs font-medium bg-surface-container text-on-surface-variant border border-outline-variant">
+                                                Shipped
+                                            </span>
+</td>
+<td class="font-body-md text-body-md text-primary py-4 px-4 text-right">$450.00</td>
+<td class="font-body-md text-body-md py-4 pl-4 text-right">
+<a class="font-button text-button text-primary underline hover:opacity-70 transition-opacity" href="#">View Details</a>
+</td>
+</tr>
+<tr class="border-b border-surface-container hover:bg-surface transition-colors">
+<td class="font-body-md text-body-md text-primary py-4 pr-4">#LX-89432</td>
+<td class="font-body-md text-body-md text-on-surface-variant py-4 px-4">Sep 12, 2024</td>
+<td class="font-body-md text-body-md py-4 px-4">
+<span class="inline-flex items-center px-2 py-1 rounded-sm text-xs font-medium bg-surface-container-highest text-primary border border-outline-variant">
+                                                Delivered
+                                            </span>
+</td>
+<td class="font-body-md text-body-md text-primary py-4 px-4 text-right">$1,200.00</td>
+<td class="font-body-md text-body-md py-4 pl-4 text-right">
+<a class="font-button text-button text-primary underline hover:opacity-70 transition-opacity" href="#">View Details</a>
+</td>
+</tr>
+<tr class="hover:bg-surface transition-colors">
+<td class="font-body-md text-body-md text-primary py-4 pr-4">#LX-88105</td>
+<td class="font-body-md text-body-md text-on-surface-variant py-4 px-4">Aug 05, 2024</td>
+<td class="font-body-md text-body-md py-4 px-4">
+<span class="inline-flex items-center px-2 py-1 rounded-sm text-xs font-medium bg-surface-container-highest text-primary border border-outline-variant">
+                                                Delivered
+                                            </span>
+</td>
+<td class="font-body-md text-body-md text-primary py-4 px-4 text-right">$320.00</td>
+<td class="font-body-md text-body-md py-4 pl-4 text-right">
+<a class="font-button text-button text-primary underline hover:opacity-70 transition-opacity" href="#">View Details</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- Profile View -->
+<section class="mb-section-gap-sm pt-8 border-t border-surface-container-highest" id="profile">
+<h3 class="font-headline-sm text-headline-sm text-primary mb-6">Profile Information</h3>
+<div class="bg-surface-container-lowest p-6 md:p-8 rounded-DEFAULT max-w-2xl">
+<form class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-2" for="first_name">First Name</label>
+<input class="w-full bg-transparent border border-outline-variant rounded-DEFAULT px-4 py-3 font-body-md text-body-md text-primary focus:border-primary focus:ring-0 transition-colors" id="first_name" name="first_name" type="text" value="Jane"/>
+</div>
+<div>
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-2" for="last_name">Last Name</label>
+<input class="w-full bg-transparent border border-outline-variant rounded-DEFAULT px-4 py-3 font-body-md text-body-md text-primary focus:border-primary focus:ring-0 transition-colors" id="last_name" name="last_name" type="text" value="Doe"/>
+</div>
+</div>
+<div>
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-2" for="email">Email Address</label>
+<input class="w-full bg-transparent border border-outline-variant rounded-DEFAULT px-4 py-3 font-body-md text-body-md text-primary focus:border-primary focus:ring-0 transition-colors" id="email" name="email" type="email" value="jane.doe@example.com"/>
+</div>
+<div class="pt-4">
+<h4 class="font-label-caps text-label-caps text-primary mb-4 border-b border-surface-container pb-2">Change Password</h4>
+<div class="space-y-4">
+<div>
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-2" for="current_password">Current Password</label>
+<input class="w-full bg-transparent border border-outline-variant rounded-DEFAULT px-4 py-3 font-body-md text-body-md text-primary focus:border-primary focus:ring-0 transition-colors" id="current_password" name="current_password" type="password"/>
+</div>
+<div>
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-2" for="new_password">New Password</label>
+<input class="w-full bg-transparent border border-outline-variant rounded-DEFAULT px-4 py-3 font-body-md text-body-md text-primary focus:border-primary focus:ring-0 transition-colors" id="new_password" name="new_password" type="password"/>
+</div>
+</div>
+</div>
+<div class="pt-6">
+<button class="bg-primary text-on-primary font-button text-button px-8 py-4 rounded-lg hover:-translate-y-1 hover:shadow-lg transition-all duration-300" type="submit">
+                                    Save Changes
+                                </button>
+</div>
+</form>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-section-gap-sm bg-surface-container dark:bg-surface-container-highest mt-auto">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<!-- Brand -->
+<div class="col-span-1 md:col-span-1 mb-8 md:mb-0">
+<a class="font-headline-md text-headline-md text-primary dark:text-primary-fixed block mb-4" href="#">LUXE</a>
+<p class="font-body-md text-body-md text-on-surface dark:text-on-surface-variant opacity-70">
+                    © 2024 LUXE STOREFRONT. ALL RIGHTS RESERVED.
+                </p>
+</div>
+<!-- Links Group 1 -->
+<div class="col-span-1 flex flex-col space-y-4">
+<a class="font-label-caps text-label-caps text-on-surface-variant dark:text-on-primary-container hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">Privacy Policy</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant dark:text-on-primary-container hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">Terms of Service</a>
+</div>
+<!-- Links Group 2 -->
+<div class="col-span-1 flex flex-col space-y-4">
+<a class="font-label-caps text-label-caps text-on-surface-variant dark:text-on-primary-container hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">Shipping &amp; Returns</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant dark:text-on-primary-container hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">Contact Us</a>
+</div>
+<!-- Links Group 3 -->
+<div class="col-span-1 flex flex-col space-y-4">
+<a class="font-label-caps text-label-caps text-on-surface-variant dark:text-on-primary-container hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">Sustainability</a>
+</div>
+</div>
+</footer>
+</body></html>
