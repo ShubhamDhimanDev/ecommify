@@ -6,6 +6,7 @@ import { useStore } from "@/context/StoreContext";
 import { useAuth } from "@/context/AuthContext";
 import { categoryApi } from "@/lib/api/client";
 import type { Category } from "@/lib/types/product";
+import { Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
 
 interface HeaderProps {
   storeSlug: string;
@@ -13,8 +14,9 @@ interface HeaderProps {
 
 export function Header({ storeSlug }: HeaderProps) {
   const { store } = useStore();
-  const { customer, isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (storeSlug) {
@@ -25,113 +27,151 @@ export function Header({ storeSlug }: HeaderProps) {
   async function loadCategories() {
     try {
       const data = await categoryApi.list(storeSlug);
-      // Extract unique categories from products if include_categories was used
-      setCategories((data as any).categories || []);
+      setCategories(data);
     } catch (error) {
       console.error("Failed to load categories:", error);
     }
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm">
-      {/* Top bar */}
-      <div className="border-b border-gray-100 bg-gray-50 px-4 py-2 text-xs text-gray-600">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <span>Welcome to {store?.name || "Our Store"}</span>
-          <div className="flex gap-4">
-            {isAuthenticated ? (
-              <>
-                <span className="font-medium text-gray-900">{customer?.first_name}</span>
-                <button onClick={logout} className="hover:text-gray-900">
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link href={`/${storeSlug}/login`} className="hover:text-gray-900">
-                  Login
-                </Link>
-                <Link href={`/${storeSlug}/register`} className="hover:text-gray-900">
-                  Register
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
+    <header className="sticky top-0 z-50 bg-surface">
+      <div className="hidden border-b border-outline-variant/30 bg-surface-container px-4 py-2 text-xs text-secondary sm:block">
+        <div className="mx-auto max-w-7xl text-center">Free shipping on orders over $150</div>
       </div>
 
-      {/* Main header */}
-      <div className="px-4 py-4">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <Link href={`/${storeSlug}`} className="flex items-center gap-3">
-            {store?.logo_url ? (
-              <img src={store.logo_url} alt={store.name} className="h-12 w-12 rounded-lg object-cover" />
-            ) : (
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-600">
-                <span className="text-lg font-bold text-white">{store?.name?.charAt(0) || "S"}</span>
-              </div>
-            )}
-            <div>
-              <h1 className="text-lg font-bold text-gray-900">{store?.name || "Store"}</h1>
-              <p className="text-xs text-gray-500">{store?.business_name}</p>
-            </div>
-          </Link>
+      <nav className="border-b border-outline-variant/30 px-4 py-4 sm:py-6">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex items-center justify-between gap-4">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="rounded-lg p-2 transition hover:bg-surface-container md:hidden"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
 
-          <nav className="hidden flex-1 items-center justify-center gap-8 md:flex">
-            <Link href={`/${storeSlug}`} className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">
+            <Link href={`/${storeSlug}`} className="absolute left-1/2 -translate-x-1/2 md:relative md:translate-x-0">
+              <div className="text-center md:text-left">
+                <h1 className="display-title text-xl tracking-tight text-foreground md:text-2xl">{store?.name || "Store"}</h1>
+              </div>
+            </Link>
+
+            <div className="flex items-center gap-4 md:gap-6">
+              <button className="hidden rounded-lg p-2 transition hover:bg-surface-container sm:block" aria-label="Search">
+                <Search className="h-5 w-5 text-foreground" />
+              </button>
+
+              <Link
+                href={isAuthenticated ? `/${storeSlug}/account` : `/${storeSlug}/login`}
+                className="rounded-lg p-2 transition hover:bg-surface-container"
+                aria-label="Account"
+              >
+                <UserRound className="h-5 w-5 text-foreground" />
+              </Link>
+
+              <Link
+                href={`/${storeSlug}/cart`}
+                className="relative rounded-lg p-2 transition hover:bg-surface-container"
+                aria-label="Cart"
+              >
+                <ShoppingBag className="h-5 w-5 text-foreground" />
+                <span className="absolute -right-1 -top-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-on-primary">
+                  0
+                </span>
+              </Link>
+            </div>
+          </div>
+
+          <div className="mt-6 hidden items-center justify-center gap-8 md:flex">
+            <Link href={`/${storeSlug}`} className="text-sm font-medium text-secondary transition hover:text-foreground">
               Home
             </Link>
-            <Link href={`/${storeSlug}/products`} className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">
+            <Link
+              href={`/${storeSlug}/products`}
+              className="text-sm font-medium text-secondary transition hover:text-foreground"
+            >
               Shop All
             </Link>
-            {categories.length > 0 && (
-              <div className="group relative">
-                <button className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">Categories</button>
-                <div className="absolute left-0 top-full hidden w-48 rounded-lg border border-gray-200 bg-white shadow-lg group-hover:block">
-                  {categories.map((cat) => (
-                    <Link
-                      key={cat.id}
-                      href={`/${storeSlug}/products?category=${cat.id}`}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 first:rounded-t-lg last:rounded-b-lg transition"
-                    >
-                      {cat.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <Link
-              href={`/${storeSlug}/cart`}
-              className="relative inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
-            >
-              🛒 Cart
-              <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
-                0
-              </span>
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile category nav */}
-      {categories.length > 0 && (
-        <div className="border-t border-gray-100 bg-gray-50 px-4 py-2 md:hidden overflow-x-auto">
-          <div className="flex gap-2">
-            {categories.slice(0, 5).map((cat) => (
+            {categories.slice(0, 4).map((cat) => (
               <Link
                 key={cat.id}
                 href={`/${storeSlug}/products?category=${cat.id}`}
-                className="whitespace-nowrap rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-blue-50 transition"
+                className="text-sm font-medium text-secondary transition hover:text-foreground"
               >
                 {cat.name}
               </Link>
             ))}
+            {categories.length > 4 && (
+              <div className="group relative">
+                <button className="text-sm font-medium text-secondary transition hover:text-foreground">More</button>
+                <div className="absolute left-0 top-full hidden pt-2 group-hover:block">
+                  <div className="rounded-lg border border-outline-variant bg-surface shadow-lg">
+                    {categories.slice(4).map((cat) => (
+                      <Link
+                        key={cat.id}
+                        href={`/${storeSlug}/products?category=${cat.id}`}
+                        className="block px-4 py-2 text-sm text-secondary transition first:rounded-t-lg last:rounded-b-lg hover:bg-surface-container"
+                      >
+                        {cat.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
+
+          {mobileMenuOpen && (
+            <div className="mt-6 flex flex-col gap-3 md:hidden">
+              <Link
+                href={`/${storeSlug}`}
+                className="rounded px-2 py-2 text-sm font-medium text-secondary transition hover:bg-surface-container hover:text-foreground"
+              >
+                Home
+              </Link>
+              <Link
+                href={`/${storeSlug}/products`}
+                className="rounded px-2 py-2 text-sm font-medium text-secondary transition hover:bg-surface-container hover:text-foreground"
+              >
+                Shop All
+              </Link>
+              {categories.map((cat) => (
+                <Link
+                  key={cat.id}
+                  href={`/${storeSlug}/products?category=${cat.id}`}
+                  className="rounded px-2 py-2 text-sm text-secondary transition hover:bg-surface-container hover:text-foreground"
+                >
+                  {cat.name}
+                </Link>
+              ))}
+
+              {isAuthenticated ? (
+                <button
+                  onClick={logout}
+                  className="rounded px-2 py-2 text-left text-sm font-medium text-error transition hover:bg-red-50"
+                >
+                  Logout
+                </button>
+              ) : (
+                <>
+                  <Link
+                    href={`/${storeSlug}/login`}
+                    className="rounded px-2 py-2 text-sm font-medium text-secondary transition hover:bg-surface-container hover:text-foreground"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href={`/${storeSlug}/register`}
+                    className="rounded px-2 py-2 text-sm font-medium text-secondary transition hover:bg-surface-container hover:text-foreground"
+                  >
+                    Register
+                  </Link>
+                </>
+              )}
+            </div>
+          )}
         </div>
-      )}
+      </nav>
     </header>
   );
 }

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Product Detail - LUXE</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-fixed": "#e5e2e1",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f7f3f2",
+                        "inverse-surface": "#313030",
+                        "on-primary-container": "#858383",
+                        "on-tertiary-fixed": "#1c1b1a",
+                        "secondary": "#585f6c",
+                        "on-surface-variant": "#444748",
+                        "on-tertiary-container": "#868382",
+                        "surface-variant": "#e5e2e1",
+                        "surface-dim": "#ddd9d8",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#c8c6c5",
+                        "on-secondary-fixed-variant": "#404754",
+                        "on-surface": "#1c1b1b",
+                        "surface-bright": "#fdf8f8",
+                        "surface-container-high": "#ebe7e6",
+                        "secondary-container": "#dce2f3",
+                        "on-error": "#ffffff",
+                        "primary": "#000000",
+                        "surface-tint": "#5f5e5e",
+                        "tertiary": "#000000",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#c0c7d6",
+                        "tertiary-fixed": "#e6e2df",
+                        "tertiary-fixed-dim": "#cac6c4",
+                        "primary-container": "#1c1b1b",
+                        "surface": "#fdf8f8",
+                        "tertiary-container": "#1c1b1a",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-primary-fixed": "#1c1b1b",
+                        "on-primary-fixed-variant": "#474746",
+                        "on-tertiary-fixed-variant": "#484645",
+                        "on-secondary-fixed": "#151c27",
+                        "on-secondary-container": "#5e6572",
+                        "secondary-fixed": "#dce2f3",
+                        "inverse-on-surface": "#f4f0ef",
+                        "inverse-primary": "#c8c6c5",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fdf8f8",
+                        "on-background": "#1c1b1b",
+                        "surface-container": "#f1edec",
+                        "outline-variant": "#c4c7c7",
+                        "outline": "#747878"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    spacing: {
+                        "section-gap-lg": "120px",
+                        "base": "8px",
+                        "container-max": "1440px",
+                        "section-gap-sm": "64px",
+                        "margin-desktop": "64px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px"
+                    },
+                    fontFamily: {
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-caps": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Playfair Display"],
+                        "display-lg": ["Playfair Display"],
+                        "button": ["Plus Jakarta Sans"],
+                        "display-lg-mobile": ["Playfair Display"],
+                        "headline-md": ["Playfair Display"],
+                        "body-md": ["Plus Jakarta Sans"]
+                    },
+                    fontSize: {
+                        "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
+                        "label-caps": ["12px", { lineHeight: "1.2", letterSpacing: "0.1em", fontWeight: "600" }],
+                        "headline-sm": ["24px", { lineHeight: "1.4", fontWeight: "400" }],
+                        "display-lg": ["64px", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "400" }],
+                        "button": ["14px", { lineHeight: "1", letterSpacing: "0.05em", fontWeight: "500" }],
+                        "display-lg-mobile": ["40px", { lineHeight: "1.2", letterSpacing: "-0.01em", fontWeight: "400" }],
+                        "headline-md": ["32px", { lineHeight: "1.3", fontWeight: "400" }],
+                        "body-md": ["16px", { lineHeight: "1.6", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen pt-20">
+<!-- Announcement Bar -->
+<div class="fixed top-0 w-full z-50 bg-primary text-on-primary py-2 text-center">
+<p class="font-label-caps text-label-caps uppercase tracking-widest">Free Shipping on orders over $200</p>
+</div>
+<!-- TopNavBar -->
+<nav class="bg-surface dark:bg-on-background fixed top-8 w-full z-40 transition-all duration-300">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-20 max-w-container-max mx-auto">
+<!-- Mobile Menu Icon (Hidden on Desktop) -->
+<button class="md:hidden text-primary dark:text-primary-fixed">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<!-- Brand Logo -->
+<a class="font-display-lg-mobile text-display-lg-mobile tracking-tighter text-primary dark:text-primary-fixed uppercase" href="#">LUXE</a>
+<!-- Desktop Navigation -->
+<ul class="hidden md:flex items-center space-x-8">
+<li><a class="text-primary dark:text-primary-fixed border-b border-primary dark:border-primary-fixed pb-1 font-label-caps text-label-caps uppercase opacity-80 scale-[0.98] transition-all" href="#">Shop All</a></li>
+<li><a class="text-on-surface-variant dark:text-on-primary-container pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 font-label-caps text-label-caps uppercase" href="#">New Arrivals</a></li>
+<li><a class="text-on-surface-variant dark:text-on-primary-container pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 font-label-caps text-label-caps uppercase" href="#">Collections</a></li>
+<li><a class="text-on-surface-variant dark:text-on-primary-container pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 font-label-caps text-label-caps uppercase" href="#">About</a></li>
+</ul>
+<!-- Trailing Icons -->
+<div class="flex items-center space-x-4">
+<button class="text-primary dark:text-primary-fixed hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300"><span class="material-symbols-outlined">search</span></button>
+<button class="text-primary dark:text-primary-fixed hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 hidden md:block"><span class="material-symbols-outlined">favorite</span></button>
+<button class="text-primary dark:text-primary-fixed hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 hidden md:block"><span class="material-symbols-outlined">person</span></button>
+<button class="text-primary dark:text-primary-fixed hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300"><span class="material-symbols-outlined">shopping_bag</span></button>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-section-gap-sm mt-12">
+<!-- Breadcrumbs -->
+<nav class="mb-8 hidden md:block">
+<ol class="flex items-center space-x-2 text-on-surface-variant font-label-caps text-label-caps uppercase">
+<li><a class="hover:text-primary transition-colors" href="#">Home</a></li>
+<li><span class="mx-2">/</span></li>
+<li><a class="hover:text-primary transition-colors" href="#">Apparel</a></li>
+<li><span class="mx-2">/</span></li>
+<li class="text-primary font-semibold">The Classic Wool Overcoat</li>
+</ol>
+</nav>
+<!-- Product Split Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter lg:gap-16">
+<!-- Left Column: Images -->
+<div class="lg:col-span-7 flex flex-col-reverse md:flex-row gap-4">
+<!-- Thumbnails (Vertical on Desktop, Horizontal on Mobile) -->
+<div class="flex md:flex-col gap-4 overflow-x-auto md:overflow-visible w-full md:w-24 flex-shrink-0">
+<button class="w-20 h-24 md:w-24 md:h-32 flex-shrink-0 border border-primary relative overflow-hidden bg-surface-container">
+<img alt="Thumbnail 1" class="w-full h-full object-cover" data-alt="A minimalist digital art installation art piece featuring glowing, generative geometric shapes. The room is illuminated by high-key, soft white lighting. Deep blacks and pristine whites with vibrant red accents. The mood is serene yet technologically advanced." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8Yd0tAGQszB4yOYnOlbn8jjF268Sk1HMp8IeKF0flx12WmulSWw_kWajiAEK1P-Tlpg0Axt_GRB8W3PpuEnzS3kNCOjDfFGkWM5Ba1AZfCRc2NWlpRzGJRCPXR6y2qf12CNn5O_6xB38F1gP6Arhun9gcWOzftE0eUvlhd3zWIkEY_IOpoPym69ZzbKdXfJarMFDtH8CSMPzpNd-DpdIMBbJMX8rlUtP06P0WZT0muxmWpJrWL2JGO9KgE9DadR0hLRp4VYLPdxA"/>
+</button>
+<button class="w-20 h-24 md:w-24 md:h-32 flex-shrink-0 border border-transparent hover:border-outline-variant transition-colors relative overflow-hidden bg-surface-container opacity-60 hover:opacity-100">
+<img alt="Thumbnail 2" class="w-full h-full object-cover" data-alt="A minimalist digital art installation art piece featuring glowing, generative geometric shapes. The room is illuminated by high-key, soft white lighting. Deep blacks and pristine whites with vibrant red accents. The mood is serene yet technologically advanced." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlsVMKxkEadwAZ2jn4lVLqbphq88gZblySi_O_aoIQ8Y__GnyVgrThjsinWfFCa3BmTc-f2XCMSSIEtkj8aYC9-TVkkKCcdMj5RXRcGOF1L5fYJaH2PZ9KwVHyUWCIx-HhPsYowYmM12v6qkO97pAELBdRQFw30Zt3LQ5wWG0LvMBfUNphY23zaIFNODZTwVrlAnpcb2aa4M3JNHEo9_l_Ks5atl5iBq5EirUCz9o_VrGavysSFSnZsQq2hLL3V6GtwV7HG5howLU"/>
+</button>
+<button class="w-20 h-24 md:w-24 md:h-32 flex-shrink-0 border border-transparent hover:border-outline-variant transition-colors relative overflow-hidden bg-surface-container opacity-60 hover:opacity-100">
+<img alt="Thumbnail 3" class="w-full h-full object-cover" data-alt="A minimalist digital art installation art piece featuring glowing, generative geometric shapes. The room is illuminated by high-key, soft white lighting. Deep blacks and pristine whites with vibrant red accents. The mood is serene yet technologically advanced." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4pq-d7dLTtlva5_vyQuttceweiGouMEZcn0-zBQJcwmfi5t_4WFLNwPCqWdeCYu9LPgv4hCcBDL4evYWrMs8vGM6x6jtkJMJyCCUw7lV8OARNge1WLDFEUs__e7Rz6_bNhkhIdqG6GrRxSzS_mO-exDhs7KaKzKlznCbL4gbM69cftn2ZHr2JgCfjDPU8GHysukcetWet3ASxHAwENBN2LGU1T1XjntmbZWzQ5BcypyhtetXC-eLW0eBjt4DI7jirKZLQDI6lmpk"/>
+</button>
+</div>
+<!-- Main Image -->
+<div class="w-full relative aspect-[3/4] md:aspect-auto md:h-[800px] bg-surface-container overflow-hidden group">
+<img alt="Main Product Image" class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 cursor-zoom-in" data-alt="A striking minimalist editorial fashion photograph of a high-end wool overcoat. The lighting is soft, natural, and high-key, creating a bright gallery aesthetic. The background is a warm, pristine white surface. The coat is perfectly styled, exuding quiet luxury and timeless proportions." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnQzmb4EecAq7PaNSKEnSUhz3HhtjBJEJQyOQtAiTFT7Z7thO2c1TNLWtqd1NiJ5YwO5Ni4BHvjAoFzaBTO-Xrol1lp4nwFyFqXeh6Uvee6BSCI3Eq2V3ScxkqHXxb_aSnUlIUPvqADo7YSZYMEzgfr30pc-GH1mHtS1--xyryUmu8RSJsv8r4cNrMP8UQpQu3sI0RIzCD-3slS4LnLsz9Zc9CtcJf7EU8rhHFaHdpc1xnpQBbZlvSvAYjJzlE-TqTWNQvrYHnsxw"/>
+</div>
+</div>
+<!-- Right Column: Details & Actions -->
+<div class="lg:col-span-5 flex flex-col justify-start pt-4 lg:pt-0">
+<!-- Title & Price -->
+<div class="mb-8">
+<h1 class="font-headline-md text-headline-md text-primary mb-2">The Classic Wool Overcoat</h1>
+<div class="flex items-center space-x-4 mb-4">
+<span class="font-body-lg text-body-lg text-on-surface">$320.00</span>
+<div class="flex items-center space-x-1">
+<span class="material-symbols-outlined text-sm text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm text-primary" style="font-variation-settings: 'FILL' 0.5;">star_half</span>
+<span class="font-body-md text-sm text-on-surface-variant ml-1">(4.8/5)</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                        Tailored from a premium heavyweight wool blend, this classic silhouette features unstructured shoulders and a relaxed drape for an effortlessly elevated aesthetic.
+                    </p>
+</div>
+<hr class="border-t border-surface-container-high mb-8"/>
+<!-- Color Selection -->
+<div class="mb-8">
+<div class="flex justify-between items-center mb-3">
+<span class="font-label-caps text-label-caps uppercase text-primary">Color: Slate</span>
+</div>
+<div class="flex space-x-3">
+<button aria-label="Cream" class="w-10 h-10 rounded-full bg-[#E5E2D9] border border-outline-variant hover:border-primary transition-colors ring-2 ring-transparent focus:ring-primary focus:outline-none"></button>
+<button aria-label="Slate" class="w-10 h-10 rounded-full bg-[#585F6C] border-2 border-primary ring-2 ring-offset-2 ring-primary focus:outline-none"></button>
+<button aria-label="Olive" class="w-10 h-10 rounded-full bg-[#4A5D23] border border-outline-variant hover:border-primary transition-colors ring-2 ring-transparent focus:ring-primary focus:outline-none"></button>
+</div>
+</div>
+<!-- Size Selection -->
+<div class="mb-8">
+<div class="flex justify-between items-center mb-3">
+<span class="font-label-caps text-label-caps uppercase text-primary">Size</span>
+<a class="font-label-caps text-label-caps text-on-surface-variant underline hover:text-primary transition-colors" href="#">Size Guide</a>
+</div>
+<div class="grid grid-cols-4 gap-3">
+<button class="py-3 border border-outline-variant hover:border-primary text-center font-button text-button transition-colors rounded">S</button>
+<button class="py-3 border-2 border-primary bg-primary text-on-primary text-center font-button text-button transition-colors rounded">M</button>
+<button class="py-3 border border-outline-variant hover:border-primary text-center font-button text-button transition-colors rounded">L</button>
+<button class="py-3 border border-outline-variant hover:border-primary text-center font-button text-button transition-colors opacity-50 cursor-not-allowed rounded" disabled="">XL</button>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-col space-y-4 mb-12">
+<div class="flex space-x-4">
+<!-- Quantity -->
+<div class="flex items-center border border-outline-variant rounded h-12 w-32">
+<button class="w-10 h-full flex items-center justify-center text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-sm">remove</span></button>
+<span class="flex-1 text-center font-body-md text-body-md">1</span>
+<button class="w-10 h-full flex items-center justify-center text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-sm">add</span></button>
+</div>
+<!-- Add to Cart -->
+<button class="flex-1 bg-primary text-on-primary font-button text-button uppercase tracking-wider py-3 px-8 rounded hover:opacity-90 hover:-translate-y-1 transition-all duration-300 shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
+                            Add to Cart
+                        </button>
+</div>
+<!-- Buy Now -->
+<button class="w-full bg-transparent border border-primary text-primary font-button text-button uppercase tracking-wider py-3 px-8 rounded hover:bg-surface-container-low transition-colors duration-300">
+                        Buy Now
+                    </button>
+</div>
+<!-- Accordions (Details, Specs, Shipping) -->
+<div class="border-t border-surface-container-high divide-y divide-surface-container-high">
+<!-- Description Accordion -->
+<details class="group py-4" open="">
+<summary class="flex justify-between items-center cursor-pointer list-none font-label-caps text-label-caps uppercase text-primary">
+                            Description
+                            <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+</summary>
+<div class="pt-4 pb-2 font-body-md text-body-md text-on-surface-variant">
+                            Designed with meticulous attention to detail, this overcoat bridges the gap between formal and casual. The heavyweight wool ensures warmth without the bulk, while the minimal hardware keeps the aesthetic clean and gallery-ready.
+                        </div>
+</details>
+<!-- Specs Accordion -->
+<details class="group py-4">
+<summary class="flex justify-between items-center cursor-pointer list-none font-label-caps text-label-caps uppercase text-primary">
+                            Details &amp; Specs
+                            <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+</summary>
+<div class="pt-4 pb-2 font-body-md text-body-md text-on-surface-variant">
+<ul class="list-disc pl-5 space-y-1">
+<li>80% Wool, 20% Polyamide</li>
+<li>Unlined body, lined sleeves</li>
+<li>Notch lapel</li>
+<li>Two front welt pockets</li>
+<li>Dry clean only</li>
+</ul>
+</div>
+</details>
+<!-- Shipping Accordion -->
+<details class="group py-4">
+<summary class="flex justify-between items-center cursor-pointer list-none font-label-caps text-label-caps uppercase text-primary">
+                            Shipping &amp; Returns
+                            <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+</summary>
+<div class="pt-4 pb-2 font-body-md text-body-md text-on-surface-variant">
+                            Complimentary standard shipping on all domestic orders. Returns are accepted within 30 days of delivery in unworn condition with original tags attached.
+                        </div>
+</details>
+</div>
+</div>
+</div>
+</main>
+<!-- Related Products Section -->
+<section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-section-gap-lg">
+<h2 class="font-headline-sm text-headline-sm text-primary mb-8 text-center uppercase tracking-widest">You May Also Like</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-gutter">
+<!-- Product Card 1 -->
+<a class="group block" href="#">
+<div class="aspect-[3/4] overflow-hidden bg-surface-container mb-4 rounded">
+<img alt="Related Product 1" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A high-end editorial photo of a crisp white poplin shirt on a pristine warm white background. High-key lighting highlights the sharp tailoring. The mood is minimalist, sophisticated, and clean." src="https://lh3.googleusercontent.com/aida-public/AB6AXuASvvB8xr2koV4Y9s9Msx3FvNXEYHw7SFXiAv3owa59bjvpjPTqmStNL44kJD6aVoSKVZANnY4-ByktaBHXu8WC0iUpIvRrPxA6BY4U6SBLbAHDIJzaiz3MJdVLBUgNP0Or0lzMM1oT9DNNlZxdijY_jYE3EB5cHvD2PqQ22-77LTIrJINT0jgWuJ9EIHTByeDeA_URSJ3fhpPdTSB-WQ4QxvCj5HWBUxE4JYDZo0Ck9_0ScYNemD_J4bxYfIinP5yoki8XhqWThPY"/>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-primary truncate">Tailored Poplin Shirt</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant mt-1">$140.00</span>
+</div>
+</a>
+<!-- Product Card 2 -->
+<a class="group block" href="#">
+<div class="aspect-[3/4] overflow-hidden bg-surface-container mb-4 rounded">
+<img alt="Related Product 2" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A minimalist presentation of tailored pleated trousers in a soft beige tone. Shot from above on a flat neutral surface with soft, diffused lighting. The image conveys timeless proportion and high-end DTC aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAV5mOazjN1yQ4nx9pr5aJiFeoF7tKjqon3Ay0u2_eBaEK0AhF31CDmm45Dc5ByNm5D-KT0WAtSwizUlwPAJ5CEbUJaLOQ9oPOAQq60uXRvYIclGOgj4KHlMBY3Zl4O4HIyM9L9ClIOPAzmdzOh_KzGXcL6p8yK41cQeQMH-UzkCsaheIdknotKYMbyZnEFVD2ADLbSTn-Ud4qjZNiwe9NutP8JaPY9X1C_XSgPzeD69XZ5nh1t5Rjz6gkPtmWUmuEBf0WrVLOa8SM"/>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-primary truncate">Pleated Wool Trousers</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant mt-1">$195.00</span>
+</div>
+</a>
+<!-- Product Card 3 -->
+<a class="group block hidden md:block" href="#">
+<div class="aspect-[3/4] overflow-hidden bg-surface-container mb-4 rounded">
+<img alt="Related Product 3" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A luxurious cashmere crewneck sweater in deep charcoal, folded neatly on a clean white surface. Soft shadows indicate subtle depth. The texture of the knit is highly visible, emphasizing quality and comfort." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrXouigioCQ1ht76qeF0DS2GXrsnth3gdqpZeVUgGjNs9o0R23qIfJWWKsD_f2kdd_f3iMUlbyB9XL3Cc6DawVk4xGphf3vLQT5Kr0znMkhorKGU9DUM44rY6CMmT9bb1yOEzbBwAjg_WxsknvBoLoIIYv2X4R1rP1DWJ29vsDNG1zvPiN_9NN28wIZEmK2Nr9JQeZLBR__5fcm0fF5o_b7xD3HSDh2ZZIJSdWHj9bYKpqpw_HIDYnMJCapNs3j8QWWO4YmXBJ16M"/>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-primary truncate">Cashmere Crewneck</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant mt-1">$280.00</span>
+</div>
+</a>
+<!-- Product Card 4 -->
+<a class="group block hidden md:block" href="#">
+<div class="aspect-[3/4] overflow-hidden bg-surface-container mb-4 rounded">
+<img alt="Related Product 4" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A pair of sleek leather boots presented on a warm, minimalist stone pedestal. The lighting is focused, casting a soft whisper shadow. The styling is architectural and quiet luxury." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRx6qlwAzTM8wCTo8CDvkoyZQb45wcnqqgCbJkzkBQwVibMOMkHxflDOg1jYi43NcseoMZKoh_cPSZ9FNDRqRUrNRdLFg7MkBcBKB_tT5Ckq38s9sbU50S3MI9c1ljNp5pJiN6gdCt7sLNfAgPutTbG-EilHIwthG6anoqxmiyB9xLW6WaWcp-wfBTlt90HjDh9M3sN41XVsm6RGOs75pc1GC4HY2-hhtT3og2J2eyl8UDCQyA_Ij7z95grfXkkWUZeltErPGaKK8"/>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-primary truncate">Leather Chelsea Boot</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant mt-1">$350.00</span>
+</div>
+</a>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-surface-container dark:bg-surface-container-highest w-full py-section-gap-sm mt-auto">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="flex flex-col space-y-4">
+<span class="font-headline-md text-headline-md text-primary dark:text-primary-fixed uppercase tracking-tighter">LUXE</span>
+<p class="font-body-md text-body-md text-on-surface dark:text-on-surface-variant opacity-80">
+                    Elevated essentials for the modern wardrobe. Designed with intention.
+                </p>
+</div>
+<div class="flex flex-col space-y-2 md:col-start-3">
+<a class="text-on-surface-variant dark:text-on-primary-container font-label-caps text-label-caps uppercase hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant dark:text-on-primary-container font-label-caps text-label-caps uppercase hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">Terms of Service</a>
+<a class="text-on-surface-variant dark:text-on-primary-container font-label-caps text-label-caps uppercase hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">Shipping &amp; Returns</a>
+</div>
+<div class="flex flex-col space-y-2">
+<a class="text-on-surface-variant dark:text-on-primary-container font-label-caps text-label-caps uppercase hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">Contact Us</a>
+<a class="text-on-surface-variant dark:text-on-primary-container font-label-caps text-label-caps uppercase hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">Sustainability</a>
+</div>
+</div>
+<div class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto mt-12 pt-8 border-t border-outline-variant/20">
+<p class="font-label-caps text-label-caps text-on-surface-variant dark:text-on-primary-container text-center">
+                © 2024 LUXE STOREFRONT. ALL RIGHTS RESERVED.
+            </p>
+</div>
+</footer>
+</body></html>

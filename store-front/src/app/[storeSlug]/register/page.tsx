@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { ArrowRight, CircleAlert } from "lucide-react";
 
 export default function CustomerRegisterPage() {
   const router = useRouter();
@@ -43,13 +44,14 @@ export default function CustomerRegisterPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md px-4 py-12">
-      <div className="rounded-lg border border-gray-200 bg-white p-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
-        <p className="text-gray-600 mb-8">Join us to start shopping today</p>
+    <div className="mx-auto max-w-md px-4 py-14">
+      <div className="section-shell p-8">
+        <h1 className="display-title mb-2 text-4xl text-foreground">Create Account</h1>
+        <p className="mb-8 text-secondary">Join us to start shopping today</p>
 
         {error && (
-          <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
+          <div className="mb-6 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-4">
+            <CircleAlert className="h-4 w-4 text-red-700" />
             <p className="text-sm font-medium text-red-800">{error}</p>
           </div>
         )}
@@ -57,60 +59,60 @@ export default function CustomerRegisterPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+              <label className="mb-1 block text-sm font-medium text-secondary">First Name</label>
               <input
                 type="text"
                 required
                 value={formData.first_name}
                 onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900"
+                className="w-full rounded-lg border-b border-outline-variant bg-transparent px-0 py-3 text-foreground"
                 placeholder="John"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <label className="mb-1 block text-sm font-medium text-secondary">Last Name</label>
               <input
                 type="text"
                 value={formData.last_name}
                 onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900"
+                className="w-full rounded-lg border-b border-outline-variant bg-transparent px-0 py-3 text-foreground"
                 placeholder="Doe"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <label className="mb-1 block text-sm font-medium text-secondary">Email Address</label>
             <input
               type="email"
               required
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900"
+              className="w-full rounded-lg border-b border-outline-variant bg-transparent px-0 py-3 text-foreground"
               placeholder="you@example.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label className="mb-1 block text-sm font-medium text-secondary">Password</label>
             <input
               type="password"
               required
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900"
+              className="w-full rounded-lg border-b border-outline-variant bg-transparent px-0 py-3 text-foreground"
               placeholder="••••••••"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+            <label className="mb-1 block text-sm font-medium text-secondary">Confirm Password</label>
             <input
               type="password"
               required
               value={formData.confirmPassword}
               onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900"
+              className="w-full rounded-lg border-b border-outline-variant bg-transparent px-0 py-3 text-foreground"
               placeholder="••••••••"
             />
           </div>
@@ -118,18 +120,18 @@ export default function CustomerRegisterPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 font-semibold text-on-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isLoading ? "Creating account..." : "Create Account"}
+            {isLoading ? "Creating account..." : "Create Account"} <ArrowRight className="h-4 w-4" />
           </button>
         </form>
 
-        <div className="mt-6 border-t pt-6">
-          <p className="text-center text-gray-600">
+        <div className="mt-6 border-t border-outline-variant pt-6">
+          <p className="text-center text-secondary">
             Already have an account?{" "}
             <Link
               href={`/${storeSlug}/login`}
-              className="font-semibold text-blue-600 hover:text-blue-700"
+              className="font-semibold text-foreground hover:underline"
             >
               Sign in
             </Link>

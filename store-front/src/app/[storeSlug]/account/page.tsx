@@ -3,6 +3,8 @@
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { getOrders } from "@/lib/orders/localOrders";
 
 export default function CustomerAccountPage() {
   const { customer, isAuthenticated, logout } = useAuth();
@@ -10,6 +12,7 @@ export default function CustomerAccountPage() {
   const params = useParams();
   const storeSlug = params?.storeSlug as string;
   const [activeTab, setActiveTab] = useState<"profile" | "orders" | "addresses">("profile");
+  const [orders, setOrders] = useState<ReturnType<typeof getOrders>>([]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -17,26 +20,13 @@ export default function CustomerAccountPage() {
     }
   }, [isAuthenticated, router, storeSlug]);
 
+  useEffect(() => {
+    setOrders(getOrders(storeSlug));
+  }, [storeSlug, activeTab]);
+
   if (!isAuthenticated || !customer) {
     return null;
   }
-
-  const orders = [
-    {
-      id: "ORD-001",
-      date: "2024-01-15",
-      total: "$252.97",
-      status: "Delivered",
-      items: 3,
-    },
-    {
-      id: "ORD-002",
-      date: "2024-01-20",
-      total: "$89.99",
-      status: "In Transit",
-      items: 1,
-    },
-  ];
 
   const handleLogout = () => {
     logout();
@@ -136,18 +126,22 @@ export default function CustomerAccountPage() {
               ) : (
                 <div className="space-y-4">
                   {orders.map((order) => (
-                    <div key={order.id} className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition cursor-pointer">
+                    <Link
+                      key={order.id}
+                      href={`/${storeSlug}/orders/${order.id}`}
+                      className="block border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition"
+                    >
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <p className="font-semibold text-gray-900">Order {order.id}</p>
-                          <p className="text-sm text-gray-600">Placed on {order.date}</p>
+                          <p className="text-sm text-gray-600">Placed on {new Date(order.created_at).toLocaleDateString()}</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-lg text-gray-900">{order.total}</p>
+                          <p className="font-bold text-lg text-gray-900">${order.total.toFixed(2)}</p>
                           <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                            order.status === "Delivered"
+                            order.status === "delivered"
                               ? "bg-green-100 text-green-800"
-                              : order.status === "In Transit"
+                              : order.status === "shipped"
                               ? "bg-blue-100 text-blue-800"
                               : "bg-gray-100 text-gray-800"
                           }`}>
@@ -155,7 +149,7 @@ export default function CustomerAccountPage() {
                           </span>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               )}

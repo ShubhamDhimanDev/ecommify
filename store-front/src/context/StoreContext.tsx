@@ -24,7 +24,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const data = await storeApi.getBySlug(slug);
-      setStore(data as Store);
+      setStore(data);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to fetch store";
       setError(message);

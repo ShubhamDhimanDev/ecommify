@@ -1,3 +1,6 @@
+import type { Category, Product } from "@/lib/types/product";
+import type { Store } from "@/lib/types/store";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 interface ApiRequestOptions extends RequestInit {
@@ -70,6 +73,47 @@ export async function apiDelete<T>(path: string, options?: ApiRequestOptions): P
   return makeRequest<T>(path, "DELETE", undefined, options);
 }
 
+type StoreEnvelope = { store: Store };
+type CategoryEnvelope = { categories: Category[] };
+type ProductEnvelope = { product: Product };
+type ProductListEnvelope = { data: Product[] };
+
+function normalizeStore(payload: Store | StoreEnvelope): Store {
+  if (payload && typeof payload === "object" && "store" in payload) {
+    return (payload as StoreEnvelope).store;
+  }
+
+  return payload as Store;
+}
+
+function normalizeProduct(product: Product): Product {
+  return {
+    ...product,
+    category_name:
+      product.category_name ??
+      (typeof (product as { category?: { name?: string } }).category?.name === "string"
+        ? (product as { category?: { name?: string } }).category?.name
+        : undefined),
+  };
+}
+
+function buildQueryString(filters?: Record<string, unknown>): string {
+  if (!filters) {
+    return "";
+  }
+
+  const query = new URLSearchParams();
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      query.append(key, String(value));
+    }
+  });
+
+  const serialized = query.toString();
+  return serialized ? `?${serialized}` : "";
+}
+
 // Customer API (public for auth, authenticated for profile)
 export const customerApi = {
   login: (storeSlug: string, email: string, password: string) =>
@@ -82,7 +126,10 @@ export const customerApi = {
 
 // Store API (public)
 export const storeApi = {
-  getBySlug: (slug: string) => apiGet(`/api/pub/v1/stores/${slug}`),
+  getBySlug: async (slug: string): Promise<Store> => {
+    const payload = await apiGet<StoreEnvelope | Store>(`/api/pub/v1/stores/${slug}`);
+    return normalizeStore(payload);
+  },
 };
 
 // Cart API (authenticated, scoped to store/tenant)
@@ -100,21 +147,23 @@ export const cartApi = {
 
 // Product API (public)
 export const productApi = {
-  list: (slug: string, filters?: Record<string, unknown>) => {
-    const query = new URLSearchParams();
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined) query.append(key, String(value));
-      });
-    }
-    return apiGet(`/api/pub/v1/stores/${slug}/products?${query.toString()}`);
+  list: async (slug: string, filters?: Record<string, unknown>): Promise<Product[]> => {
+    const queryString = buildQueryString(filters);
+    const payload = await apiGet<ProductListEnvelope>(`/api/pub/v1/stores/${slug}/products${queryString}`);
+    return (payload.data ?? []).map((product) => normalizeProduct(product));
   },
-  getById: (slug: string, id: string) => apiGet(`/api/pub/v1/stores/${slug}/products/${id}`),
+  getById: async (slug: string, id: string): Promise<Product> => {
+    const payload = await apiGet<ProductEnvelope>(`/api/pub/v1/stores/${slug}/products/${id}`);
+    return normalizeProduct(payload.product);
+  },
 };
 
 // Category API (public)
 export const categoryApi = {
-  list: (slug: string) => apiGet(`/api/pub/v1/stores/${slug}/categories`),
+  list: async (slug: string): Promise<Category[]> => {
+    const payload = await apiGet<CategoryEnvelope>(`/api/pub/v1/stores/${slug}/categories`);
+    return payload.categories ?? [];
+  },
 };
 
 // Order API (authenticated, scoped to store/tenant)

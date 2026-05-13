@@ -1,51 +1,89 @@
 "use client";
 
-import { useStore } from "@/context/StoreContext";
 import { HeroSection } from "@/components/sections/Hero";
 import { FeaturedProducts } from "@/components/sections/FeaturedProducts";
 import { CategoryNav } from "@/components/sections/CategoryNav";
+import { ShieldCheck, Sparkles, Truck, Users } from "lucide-react";
 
 export default function StoreHomePage() {
-  const { store } = useStore();
-
   return (
-    <div className="space-y-12">
+    <>
       {/* Hero Section */}
       <HeroSection />
 
-      {/* Categories */}
-      <div className="mx-auto w-full max-w-7xl px-4">
-        <CategoryNav />
-      </div>
+      {/* Main Content */}
+      <div className="flex flex-col gap-20">
+        {/* Category Navigation */}
+        <section className="px-4">
+          <div className="mx-auto max-w-7xl">
+            <CategoryNav />
+          </div>
+        </section>
 
-      {/* Featured Products */}
-      <div className="mx-auto w-full max-w-7xl px-4">
-        <FeaturedProducts />
-      </div>
+        {/* Featured Products */}
+        <section className="px-4">
+          <div className="mx-auto max-w-7xl">
+            <FeaturedProducts />
+          </div>
+        </section>
 
-      {/* Testimonials Section (Placeholder) */}
-      <div className="mx-auto w-full max-w-7xl px-4">
-        <section className="py-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">Customer Reviews</h2>
-          <div className="grid gap-8 md:grid-cols-3">
-            {[
-              { name: "Sarah M.", review: "Amazing products and fast shipping! Will definitely order again.", rating: 5 },
-              { name: "John D.", review: "Great quality and excellent customer service. Highly recommended!", rating: 5 },
-              { name: "Emma L.", review: "Love the selection and prices. Perfect experience!", rating: 5 },
-            ].map((testimonial, i) => (
-              <div key={i} className="rounded-lg border border-gray-200 bg-white p-6">
-                <div className="flex mb-3">
-                  {[...Array(5)].map((_, j) => (
-                    <span key={j} className="text-yellow-400">★</span>
-                  ))}
+        {/* Why Trust Us Section */}
+        <section className="px-4 py-12">
+          <div className="mx-auto max-w-7xl">
+            <h2 className="headline-md text-foreground mb-12 text-center">Why Customers Choose Us</h2>
+            <div className="grid gap-8 md:grid-cols-3">
+              {[
+                {
+                  icon: Sparkles,
+                  title: "Curated Selection",
+                  description: "Carefully selected products from trusted vendors.",
+                },
+                {
+                  icon: Truck,
+                  title: "Fast & Reliable",
+                  description: "Quick processing and dependable shipping to your door.",
+                },
+                {
+                  icon: ShieldCheck,
+                  title: "Secure & Safe",
+                  description: "Protected transactions with 100% buyer protection.",
+                },
+              ].map((feature, i) => (
+                <div key={i} className="flex flex-col items-center text-center">
+                  <div className="mb-4 rounded-lg bg-primary/10 p-4">
+                    <feature.icon className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="mb-2 font-semibold text-foreground">{feature.title}</h3>
+                  <p className="text-sm text-secondary">{feature.description}</p>
                 </div>
-                <p className="text-gray-600 italic mb-4">"{testimonial.review}"</p>
-                <p className="font-semibold text-gray-900">— {testimonial.name}</p>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Community Stats */}
+        <section className="border-t border-outline-variant/30 px-4 py-12">
+          <div className="mx-auto max-w-7xl">
+            <div className="rounded-lg border border-outline-variant/30 bg-surface-container px-8 py-12 text-center">
+              <p className="label-caps text-secondary mb-4">Join Our Community</p>
+              <h2 className="headline-md text-foreground mb-8">
+                Thousands of Customers Shopping Daily
+              </h2>
+              <div className="inline-flex items-center gap-8 md:gap-16">
+                <div>
+                  <p className="display-lg-mobile text-foreground">10k+</p>
+                  <p className="text-sm text-secondary">Happy Shoppers</p>
+                </div>
+                <div className="h-12 w-px bg-outline-variant/30" />
+                <div>
+                  <p className="display-lg-mobile text-foreground">50k+</p>
+                  <p className="text-sm text-secondary">Products Available</p>
+                </div>
               </div>
-            ))}
+            </div>
           </div>
         </section>
       </div>
-    </div>
+    </>
   );
 }

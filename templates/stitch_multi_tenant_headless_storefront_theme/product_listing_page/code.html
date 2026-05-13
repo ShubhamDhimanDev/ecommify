@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LUXE - All Products</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&amp;family=Playfair+Display:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary-fixed": "#e5e2e1",
+                      "on-error-container": "#93000a",
+                      "surface-container-low": "#f7f3f2",
+                      "inverse-surface": "#313030",
+                      "on-primary-container": "#858383",
+                      "on-tertiary-fixed": "#1c1b1a",
+                      "secondary": "#585f6c",
+                      "on-surface-variant": "#444748",
+                      "on-tertiary-container": "#868382",
+                      "surface-variant": "#e5e2e1",
+                      "surface-dim": "#ddd9d8",
+                      "on-primary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-fixed-dim": "#c8c6c5",
+                      "on-secondary-fixed-variant": "#404754",
+                      "on-surface": "#1c1b1b",
+                      "surface-bright": "#fdf8f8",
+                      "surface-container-high": "#ebe7e6",
+                      "secondary-container": "#dce2f3",
+                      "on-error": "#ffffff",
+                      "primary": "#000000",
+                      "surface-tint": "#5f5e5e",
+                      "tertiary": "#000000",
+                      "error": "#ba1a1a",
+                      "error-container": "#ffdad6",
+                      "secondary-fixed-dim": "#c0c7d6",
+                      "tertiary-fixed": "#e6e2df",
+                      "tertiary-fixed-dim": "#cac6c4",
+                      "primary-container": "#1c1b1b",
+                      "surface": "#fdf8f8",
+                      "tertiary-container": "#1c1b1a",
+                      "on-secondary": "#ffffff",
+                      "surface-container-highest": "#e5e2e1",
+                      "on-primary-fixed": "#1c1b1b",
+                      "on-primary-fixed-variant": "#474746",
+                      "on-tertiary-fixed-variant": "#484645",
+                      "on-secondary-fixed": "#151c27",
+                      "on-secondary-container": "#5e6572",
+                      "secondary-fixed": "#dce2f3",
+                      "inverse-on-surface": "#f4f0ef",
+                      "inverse-primary": "#c8c6c5",
+                      "on-tertiary": "#ffffff",
+                      "background": "#fdf8f8",
+                      "on-background": "#1c1b1b",
+                      "surface-container": "#f1edec",
+                      "outline-variant": "#c4c7c7",
+                      "outline": "#747878"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "section-gap-lg": "120px",
+                      "base": "8px",
+                      "container-max": "1440px",
+                      "section-gap-sm": "64px",
+                      "margin-desktop": "64px",
+                      "margin-mobile": "16px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "body-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-caps": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "headline-sm": [
+                              "Playfair Display"
+                      ],
+                      "display-lg": [
+                              "Playfair Display"
+                      ],
+                      "button": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "display-lg-mobile": [
+                              "Playfair Display"
+                      ],
+                      "headline-md": [
+                              "Playfair Display"
+                      ],
+                      "body-md": [
+                              "Plus Jakarta Sans"
+                      ]
+              },
+              "fontSize": {
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "0.1em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-sm": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "64px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "button": [
+                              "14px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-lg-mobile": [
+                              "40px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        /* Implied Elevation via Tonal Layering - minimal shadow used only for specific components if needed, otherwise rely on background shifts */
+        .whisper-shadow {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+        }
+        .product-card-image-wrapper {
+            overflow: hidden;
+        }
+        .product-card-image-wrapper img {
+            transition: transform 0.5s ease-out;
+        }
+        .product-card:hover .product-card-image-wrapper img {
+            transform: scale(1.05);
+        }
+        .product-card:hover .quick-add-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .quick-add-btn {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        /* Custom range slider */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #000000;
+            cursor: pointer;
+            margin-top: -6px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #e5e2e1;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen flex flex-col pt-20">
+<!-- TopNavBar JSON Component -->
+<nav class="bg-surface dark:bg-on-background fixed top-0 w-full z-40">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-20 max-w-container-max mx-auto">
+<!-- Brand Logo -->
+<a class="font-display-lg-mobile text-display-lg-mobile tracking-tighter text-primary dark:text-primary-fixed" href="#">
+                LUXE
+            </a>
+<!-- Navigation Links (Web) -->
+<div class="hidden md:flex space-x-8">
+<!-- Shop All is active for the Product Listing Page intent -->
+<a class="font-label-caps text-label-caps text-primary dark:text-primary-fixed border-b border-primary dark:border-primary-fixed pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300" href="#">
+                    Shop All
+                </a>
+<a class="font-label-caps text-label-caps text-on-surface-variant dark:text-on-primary-container pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300" href="#">
+                    New Arrivals
+                </a>
+<a class="font-label-caps text-label-caps text-on-surface-variant dark:text-on-primary-container pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300" href="#">
+                    Collections
+                </a>
+<a class="font-label-caps text-label-caps text-on-surface-variant dark:text-on-primary-container pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300" href="#">
+                    About
+                </a>
+</div>
+<!-- Trailing Icons -->
+<div class="flex items-center space-x-6 text-primary dark:text-primary-fixed">
+<button class="hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 opacity-80 hover:opacity-100 hover:scale-[0.98]">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button class="hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 opacity-80 hover:opacity-100 hover:scale-[0.98]">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</button>
+<button class="hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 opacity-80 hover:opacity-100 hover:scale-[0.98] hidden md:block">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</button>
+<button class="hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 opacity-80 hover:opacity-100 hover:scale-[0.98]">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-section-gap-sm md:py-section-gap-lg">
+<!-- Header & Breadcrumbs -->
+<div class="mb-gutter md:mb-section-gap-sm">
+<nav aria-label="Breadcrumb" class="flex text-on-surface-variant font-label-caps text-label-caps mb-4">
+<ol class="inline-flex items-center space-x-2">
+<li class="inline-flex items-center">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+</li>
+<li>
+<span class="mx-1">/</span>
+</li>
+<li aria-current="page" class="text-primary">
+                        All Products
+                    </li>
+</ol>
+</nav>
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-2">All Products</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Showing 1-16 of 124 results</p>
+</div>
+<div class="flex items-center justify-between md:justify-end gap-4 border-t md:border-t-0 border-outline-variant pt-4 md:pt-0">
+<button class="md:hidden flex items-center gap-2 font-label-caps text-label-caps text-primary border border-outline-variant px-4 py-2 rounded">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+                        Filter
+                    </button>
+<div class="relative group">
+<button class="flex items-center gap-2 font-body-md text-body-md text-primary bg-transparent py-2 border-b border-transparent hover:border-primary transition-colors">
+                            Sort: Featured
+                            <span class="material-symbols-outlined text-[20px]">expand_more</span>
+</button>
+<!-- Dropdown would appear here on click/hover in a real app -->
+</div>
+</div>
+</div>
+<!-- Active Filters -->
+<div class="flex flex-wrap gap-2 mt-6">
+<span class="inline-flex items-center gap-1 px-3 py-1 bg-surface-container text-on-surface font-label-caps text-label-caps rounded-full border border-outline-variant">
+                    Summer
+                    <button class="hover:text-error transition-colors focus:outline-none"><span class="material-symbols-outlined text-[14px]">close</span></button>
+</span>
+<span class="inline-flex items-center gap-1 px-3 py-1 bg-surface-container text-on-surface font-label-caps text-label-caps rounded-full border border-outline-variant">
+                    $100 - $200
+                    <button class="hover:text-error transition-colors focus:outline-none"><span class="material-symbols-outlined text-[14px]">close</span></button>
+</span>
+<button class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors ml-2 underline underline-offset-4">
+                    Clear All
+                </button>
+</div>
+</div>
+<div class="flex flex-col md:flex-row gap-gutter">
+<!-- Sidebar Filters (Web) -->
+<aside class="hidden md:block w-64 flex-shrink-0">
+<div class="sticky top-28 space-y-8">
+<!-- Categories -->
+<div class="border-b border-outline-variant pb-6">
+<button class="flex justify-between items-center w-full text-left font-button text-button text-primary mb-4 group">
+                            Categories
+                            <span class="material-symbols-outlined text-[20px] transition-transform group-hover:text-on-surface-variant">expand_less</span>
+</button>
+<ul class="space-y-3 font-body-md text-body-md text-on-surface-variant">
+<li><label class="flex items-center gap-3 cursor-pointer group"><input class="rounded-sm border-outline-variant text-primary focus:ring-primary w-4 h-4 bg-transparent" type="checkbox"/><span class="group-hover:text-primary transition-colors">Dresses</span></label></li>
+<li><label class="flex items-center gap-3 cursor-pointer group"><input checked="" class="rounded-sm border-outline-variant text-primary focus:ring-primary w-4 h-4 bg-transparent" type="checkbox"/><span class="text-primary">Tops</span></label></li>
+<li><label class="flex items-center gap-3 cursor-pointer group"><input class="rounded-sm border-outline-variant text-primary focus:ring-primary w-4 h-4 bg-transparent" type="checkbox"/><span class="group-hover:text-primary transition-colors">Bottoms</span></label></li>
+<li><label class="flex items-center gap-3 cursor-pointer group"><input class="rounded-sm border-outline-variant text-primary focus:ring-primary w-4 h-4 bg-transparent" type="checkbox"/><span class="group-hover:text-primary transition-colors">Outerwear</span></label></li>
+<li><label class="flex items-center gap-3 cursor-pointer group"><input class="rounded-sm border-outline-variant text-primary focus:ring-primary w-4 h-4 bg-transparent" type="checkbox"/><span class="group-hover:text-primary transition-colors">Accessories</span></label></li>
+</ul>
+</div>
+<!-- Price -->
+<div class="border-b border-outline-variant pb-6">
+<button class="flex justify-between items-center w-full text-left font-button text-button text-primary mb-4 group">
+                            Price
+                            <span class="material-symbols-outlined text-[20px] transition-transform group-hover:text-on-surface-variant">expand_less</span>
+</button>
+<div class="space-y-4">
+<div class="flex justify-between font-body-md text-body-md text-on-surface-variant">
+<span>$100</span>
+<span>$200</span>
+</div>
+<div class="relative h-2 w-full">
+<div class="absolute top-0 bottom-0 left-0 right-0 bg-surface-container rounded-full"></div>
+<div class="absolute top-0 bottom-0 left-[20%] right-[40%] bg-primary rounded-full"></div>
+<input class="absolute w-full h-full opacity-0 cursor-pointer pointer-events-auto" max="500" min="0" type="range" value="100"/>
+<input class="absolute w-full h-full opacity-0 cursor-pointer pointer-events-auto" max="500" min="0" type="range" value="200"/>
+<!-- Thumbs mock -->
+<div class="absolute top-1/2 -mt-2 w-4 h-4 rounded-full bg-primary shadow left-[20%] -ml-2 pointer-events-none"></div>
+<div class="absolute top-1/2 -mt-2 w-4 h-4 rounded-full bg-primary shadow right-[40%] -mr-2 pointer-events-none"></div>
+</div>
+</div>
+</div>
+<!-- Color -->
+<div class="border-b border-outline-variant pb-6">
+<button class="flex justify-between items-center w-full text-left font-button text-button text-primary mb-4 group">
+                            Color
+                            <span class="material-symbols-outlined text-[20px] transition-transform group-hover:text-on-surface-variant">expand_less</span>
+</button>
+<div class="flex flex-wrap gap-3">
+<button aria-label="Black" class="w-6 h-6 rounded-full bg-[#000000] border border-outline-variant focus:outline-none ring-2 ring-offset-2 ring-offset-surface ring-primary"></button>
+<button aria-label="White" class="w-6 h-6 rounded-full bg-[#ffffff] border border-outline-variant focus:outline-none hover:scale-110 transition-transform"></button>
+<button aria-label="Tan" class="w-6 h-6 rounded-full bg-[#d2b48c] border border-outline-variant focus:outline-none hover:scale-110 transition-transform"></button>
+<button aria-label="Olive" class="w-6 h-6 rounded-full bg-[#556b2f] border border-outline-variant focus:outline-none hover:scale-110 transition-transform"></button>
+<button aria-label="Maroon" class="w-6 h-6 rounded-full bg-[#800000] border border-outline-variant focus:outline-none hover:scale-110 transition-transform"></button>
+</div>
+</div>
+<!-- Size -->
+<div>
+<button class="flex justify-between items-center w-full text-left font-button text-button text-primary mb-4 group">
+                            Size
+                            <span class="material-symbols-outlined text-[20px] transition-transform group-hover:text-on-surface-variant">expand_less</span>
+</button>
+<div class="grid grid-cols-3 gap-2">
+<button class="py-2 border border-outline-variant font-label-caps text-label-caps text-on-surface hover:border-primary transition-colors">XS</button>
+<button class="py-2 border border-outline-variant font-label-caps text-label-caps text-on-surface hover:border-primary transition-colors">S</button>
+<button class="py-2 border border-primary bg-primary text-on-primary font-label-caps text-label-caps">M</button>
+<button class="py-2 border border-outline-variant font-label-caps text-label-caps text-on-surface hover:border-primary transition-colors">L</button>
+<button class="py-2 border border-outline-variant font-label-caps text-label-caps text-on-surface hover:border-primary transition-colors">XL</button>
+</div>
+</div>
+</div>
+</aside>
+<!-- Product Grid Canvas -->
+<div class="flex-grow">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-12">
+<!-- Product Card 1 -->
+<div class="product-card group cursor-pointer flex flex-col h-full">
+<div class="relative product-card-image-wrapper bg-surface-container aspect-[3/4] mb-4">
+<img alt="Minimalist Silk Blouse" class="w-full h-full object-cover" data-alt="A high-end editorial fashion photograph of a minimalist silk blouse in soft natural lighting. The model poses elegantly against a bright, pure white studio background. The clothing item is the focal point, emphasizing its fluid drape and premium texture. The overall mood is sophisticated, serene, and aligns with a light-mode luxury aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXQuFUXnChmjT95trU-ORq_cZlKi6-i5PVbIOPu3xFXVU0SP1MSOx6FnMEY07dhsIM3G5ui0LHwJWDnry_0R3oE7rPyi-ogifgrMJr9LqcmEciicqILlhCwU1ZbUWc3UTIDvLcWL8LJwS8uEhjoFubIPF-jwfpdatqCyiuyg9O72A_JTIV4le0ic-KqdEG288CFTS-ZqQfjhx_K8wa0F2PLb2vsiOrMIw8nYg4FKACZQDmS0jGDYne9HkM-FAgnEOjhFUUauPbSWY"/>
+<div class="absolute inset-x-0 bottom-0 p-4 quick-add-btn bg-gradient-to-t from-black/50 to-transparent">
+<button class="w-full bg-primary text-on-primary font-button text-button py-3 rounded hover:-translate-y-1 transition-transform shadow-lg">
+                                    Quick Add
+                                </button>
+</div>
+</div>
+<div class="flex flex-col flex-grow">
+<h3 class="font-body-lg text-body-lg text-primary mb-1">Minimalist Silk Blouse</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-2">Off-White</p>
+<p class="font-headline-sm text-headline-sm text-primary mt-auto">$145</p>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="product-card group cursor-pointer flex flex-col h-full">
+<div class="relative product-card-image-wrapper bg-surface-container aspect-[3/4] mb-4">
+<img alt="Unstructured Linen Blazer" class="w-full h-full object-cover" data-alt="A clean, sophisticated product shot of an unstructured linen blazer in a neutral oat hue. The garment hangs flawlessly in a spacious, light-filled environment, creating subtle, soft shadows on a pristine background. The styling is understated and gallery-like, focusing entirely on the tailored silhouette and high-quality fabric. The lighting is bright and even, perfect for a high-end minimalist catalog." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOor9at3l9qI0NvOvC5pa9_9bkoXU33SOxRILYBCAiEh8eJaOl3IC1kjx41cr6INJStHa8o5Li_8kzzL_k_jG7nMsOu6gM30ak8hRFOR9SQ6rklk3hjbGtYr6rnfgMlYDcVLlPkadu7FbtBNRMGQG1Q0UzdjDyzKHLw9E1xBqh9vj3eWqAY8UhNDJ5rik1S0Uco_TJCZ29cO2IeDGPNFAvOZ6_AhSExdeuGeYKrYFuOD5881GaT-lJBWlK60KYRuh8e4nvaj5NiTo"/>
+<div class="absolute inset-x-0 bottom-0 p-4 quick-add-btn bg-gradient-to-t from-black/50 to-transparent">
+<button class="w-full bg-primary text-on-primary font-button text-button py-3 rounded hover:-translate-y-1 transition-transform shadow-lg">
+                                    Quick Add
+                                </button>
+</div>
+</div>
+<div class="flex flex-col flex-grow">
+<h3 class="font-body-lg text-body-lg text-primary mb-1">Unstructured Linen Blazer</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-2">Oat</p>
+<p class="font-headline-sm text-headline-sm text-primary mt-auto">$285</p>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="product-card group cursor-pointer flex flex-col h-full">
+<div class="relative product-card-image-wrapper bg-surface-container aspect-[3/4] mb-4">
+<div class="absolute top-2 left-2 z-10 bg-surface px-2 py-1 border border-outline-variant font-label-caps text-label-caps text-on-surface">NEW</div>
+<img alt="Structured Leather Handbag" class="w-full h-full object-cover" data-alt="An editorial close-up of a structured leather handbag in deep obsidian black, resting on a stark white pedestal. The studio lighting highlights the premium grain of the leather and the minimal metal hardware. The composition is highly intentional, utilizing generous negative space to evoke a feeling of quiet luxury. The visual tone is sharp, high-contrast, and modern." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1f-JxWy9x8d3d_eibHjcDz5hUjpxsh47ykWhzMkwxCI2v8_7u4KqEDRRwAS429YPiXcWLQx-Rox5kcgjYTq8bv_d2z0KnRBy01KCAAtRs0LN8QrN36hCrVx9mARESZD84WvPVnh1dgmkrF_zzyJfjxYcqcAtZ7MHnIip59UMlACyS41XosyAUqSeIDktVy3ixtm6IKJ9kCxYE0POXwZbkGt618TA4QcsIs89n3bkEkhyNc1KjM9r1GFSIEqQfPz4ikyhuPSVXqUU"/>
+<div class="absolute inset-x-0 bottom-0 p-4 quick-add-btn bg-gradient-to-t from-black/50 to-transparent">
+<button class="w-full bg-primary text-on-primary font-button text-button py-3 rounded hover:-translate-y-1 transition-transform shadow-lg">
+                                    Quick Add
+                                </button>
+</div>
+</div>
+<div class="flex flex-col flex-grow">
+<h3 class="font-body-lg text-body-lg text-primary mb-1">Structured Leather Handbag</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-2">Obsidian</p>
+<p class="font-headline-sm text-headline-sm text-primary mt-auto">$420</p>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="product-card group cursor-pointer flex flex-col h-full">
+<div class="relative product-card-image-wrapper bg-surface-container aspect-[3/4] mb-4">
+<img alt="Wide-Leg Tailored Trousers" class="w-full h-full object-cover" data-alt="A serene, high-key fashion photograph featuring wide-leg tailored trousers in a soft charcoal grey. The image is bright and airy, with the garment styled simply to emphasize its impeccable cut and drape. The background is a slightly warm, off-white surface that perfectly complements the light-mode UI aesthetic. The overall presentation feels curated and effortlessly chic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoiXO1lheX-O_QGk-eFJvKHvHkK2TAgMqHcb0HV4wMBoX03h5qC_ixmKqUBXYwR_3n0HKr2u315IXaUDf8agv0RUkBORwquGF4UN65xMGZQJ7euW2AzKD87qiXt_r_Am9CYwHHw785xmeBoRrSP9dC-cCnkrDontOuIR6E5lTqYOc46_LiOaQChmGHqOqhu7Cda218cqYTfeYJ9Og6Pu3Y5a4XoR9ETWzB_x6HF1WIfM0KONh0jtoxqUth_mjUme7NXHJzRZbiG8c"/>
+<div class="absolute inset-x-0 bottom-0 p-4 quick-add-btn bg-gradient-to-t from-black/50 to-transparent">
+<button class="w-full bg-primary text-on-primary font-button text-button py-3 rounded hover:-translate-y-1 transition-transform shadow-lg">
+                                    Quick Add
+                                </button>
+</div>
+</div>
+<div class="flex flex-col flex-grow">
+<h3 class="font-body-lg text-body-lg text-primary mb-1">Wide-Leg Tailored Trousers</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-2">Charcoal</p>
+<p class="font-headline-sm text-headline-sm text-primary mt-auto">$195</p>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-section-gap-sm flex justify-center items-center space-x-2 font-button text-button">
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded bg-primary text-on-primary">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded hover:bg-surface-container transition-colors text-on-surface-variant">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded hover:bg-surface-container transition-colors text-on-surface-variant">3</button>
+<span class="w-10 h-10 flex items-center justify-center text-on-surface-variant">...</span>
+<button class="w-10 h-10 flex items-center justify-center rounded hover:bg-surface-container transition-colors text-on-surface-variant">8</button>
+<button class="w-10 h-10 flex items-center justify-center text-primary hover:bg-surface-container rounded transition-colors">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer JSON Component -->
+<footer class="bg-surface-container dark:bg-surface-container-highest w-full py-section-gap-sm mt-auto">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<!-- Brand -->
+<div class="col-span-1 mb-8 md:mb-0">
+<a class="font-headline-md text-headline-md text-primary dark:text-primary-fixed block mb-4" href="#">
+                    LUXE
+                </a>
+<p class="font-label-caps text-label-caps text-on-surface-variant dark:text-on-primary-container">
+                    © 2024 LUXE STOREFRONT. ALL RIGHTS RESERVED.
+                </p>
+</div>
+<!-- Links -->
+<div class="col-span-1 md:col-span-3 flex flex-wrap gap-x-8 gap-y-4 md:justify-end font-label-caps text-label-caps">
+<!-- Intent: Neutral, no active state forced here as it's just the footer, applying inactive style -->
+<a class="text-on-surface-variant dark:text-on-primary-container hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">
+                    Privacy Policy
+                </a>
+<a class="text-on-surface-variant dark:text-on-primary-container hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">
+                    Terms of Service
+                </a>
+<a class="text-on-surface-variant dark:text-on-primary-container hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">
+                    Shipping &amp; Returns
+                </a>
+<a class="text-on-surface-variant dark:text-on-primary-container hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">
+                    Contact Us
+                </a>
+<a class="text-on-surface-variant dark:text-on-primary-container hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">
+                    Sustainability
+                </a>
+</div>
+</div>
+</footer>
+</body></html>

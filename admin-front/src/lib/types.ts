@@ -128,6 +128,30 @@ export interface PaginatedResponse<T> {
   to: number | null;
 }
 
+// ─── Payment Gateway ────────────────────────────────────────────────────────────
+
+export type PaymentGateway = "stripe" | "razorpay" | "paypal";
+
+export interface StorePaymentGateway {
+  id: number;
+  tenant_id: string;
+  gateway: PaymentGateway;
+  is_active: boolean;
+  gateway_account_id: string | null;
+  connected_at: string | null;
+  last_refreshed_at: string | null;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PaymentGatewayConfig {
+  gateway: PaymentGateway;
+  is_connected: boolean;
+  account_id?: string;
+  connected_at?: string;
+}
+
 // ─── API Errors ────────────────────────────────────────────────────────────────
 
 export interface ApiValidationError {

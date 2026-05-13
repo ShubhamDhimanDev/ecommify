@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Search Results - LUXE</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&amp;family=Playfair+Display:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#e5e2e1",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f7f3f2",
+                        "inverse-surface": "#313030",
+                        "on-primary-container": "#858383",
+                        "on-tertiary-fixed": "#1c1b1a",
+                        "secondary": "#585f6c",
+                        "on-surface-variant": "#444748",
+                        "on-tertiary-container": "#868382",
+                        "surface-variant": "#e5e2e1",
+                        "surface-dim": "#ddd9d8",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#c8c6c5",
+                        "on-secondary-fixed-variant": "#404754",
+                        "on-surface": "#1c1b1b",
+                        "surface-bright": "#fdf8f8",
+                        "surface-container-high": "#ebe7e6",
+                        "secondary-container": "#dce2f3",
+                        "on-error": "#ffffff",
+                        "primary": "#000000",
+                        "surface-tint": "#5f5e5e",
+                        "tertiary": "#000000",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#c0c7d6",
+                        "tertiary-fixed": "#e6e2df",
+                        "tertiary-fixed-dim": "#cac6c4",
+                        "primary-container": "#1c1b1b",
+                        "surface": "#fdf8f8",
+                        "tertiary-container": "#1c1b1a",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-primary-fixed": "#1c1b1b",
+                        "on-primary-fixed-variant": "#474746",
+                        "on-tertiary-fixed-variant": "#484645",
+                        "on-secondary-fixed": "#151c27",
+                        "on-secondary-container": "#5e6572",
+                        "secondary-fixed": "#dce2f3",
+                        "inverse-on-surface": "#f4f0ef",
+                        "inverse-primary": "#c8c6c5",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fdf8f8",
+                        "on-background": "#1c1b1b",
+                        "surface-container": "#f1edec",
+                        "outline-variant": "#c4c7c7",
+                        "outline": "#747878"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "section-gap-lg": "120px",
+                        "base": "8px",
+                        "container-max": "1440px",
+                        "section-gap-sm": "64px",
+                        "margin-desktop": "64px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-caps": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Playfair Display"],
+                        "display-lg": ["Playfair Display"],
+                        "button": ["Plus Jakarta Sans"],
+                        "display-lg-mobile": ["Playfair Display"],
+                        "headline-md": ["Playfair Display"],
+                        "body-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "600"}],
+                        "headline-sm": ["24px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                        "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "400"}],
+                        "button": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "display-lg-mobile": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+                        "headline-md": ["32px", {"lineHeight": "1.3", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .whisper-shadow { box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
+        .product-hover:hover img { transform: scale(1.05); }
+        .product-hover img { transition: transform 0.5s ease; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col pt-20">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-on-background fixed top-0 w-full z-40 transition-colors duration-300">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-20 max-w-container-max mx-auto">
+<nav class="hidden md:flex gap-8 items-center font-label-caps text-label-caps">
+<a class="text-on-surface-variant dark:text-on-primary-container pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300" href="#">Shop All</a>
+<a class="text-on-surface-variant dark:text-on-primary-container pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300" href="#">New Arrivals</a>
+<a class="text-on-surface-variant dark:text-on-primary-container pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300" href="#">Collections</a>
+<a class="text-on-surface-variant dark:text-on-primary-container pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300" href="#">About</a>
+</nav>
+<div class="flex items-center">
+<a class="font-display-lg-mobile text-display-lg-mobile tracking-tighter text-primary dark:text-primary-fixed" href="/">LUXE</a>
+</div>
+<div class="flex items-center gap-6 text-primary dark:text-primary-fixed">
+<button class="hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">search</span>
+</button>
+<button class="hover:opacity-80 transition-opacity hidden md:block">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">favorite</span>
+</button>
+<button class="hover:opacity-80 transition-opacity hidden md:block">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">person</span>
+</button>
+<button class="hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">shopping_bag</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex-grow flex flex-col items-center w-full">
+<section class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-16 pb-12 flex flex-col items-center">
+<h1 class="font-headline-md text-headline-md text-on-surface mb-8 text-center">Search Results</h1>
+<div class="w-full max-w-2xl relative mb-6">
+<input class="w-full border-b border-outline-variant bg-transparent py-4 pl-0 pr-12 font-body-lg text-body-lg text-on-surface focus:outline-none focus:border-primary transition-colors placeholder:text-on-surface-variant" placeholder="Search products..." type="text" value="Linen"/>
+<button class="absolute right-0 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+<div class="text-center font-body-md text-body-md text-on-surface-variant">
+                Showing results for <span class="text-primary italic">"Linen"</span>
+<p class="mt-2 text-sm">Did you mean: <a class="text-primary underline hover:opacity-80" href="#">Linens</a>?</p>
+</div>
+</section>
+<section class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pb-section-gap-lg">
+<div class="flex justify-between items-center mb-8 border-b border-surface-container-high pb-4">
+<span class="font-label-caps text-label-caps text-on-surface-variant">24 Items</span>
+<div class="flex gap-4">
+<button class="font-label-caps text-label-caps text-on-surface flex items-center gap-2 hover:opacity-80 transition-opacity">
+                        Filter <span class="material-symbols-outlined text-[18px]">tune</span>
+</button>
+<button class="font-label-caps text-label-caps text-on-surface flex items-center gap-2 hover:opacity-80 transition-opacity hidden md:flex">
+                        Sort By <span class="material-symbols-outlined text-[18px]">expand_more</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
+<a class="group product-hover block flex flex-col cursor-pointer" href="#">
+<div class="relative w-full aspect-[3/4] overflow-hidden bg-surface-container-low mb-4">
+<img alt="Product Image" class="w-full h-full object-cover" data-alt="A pristine white linen shirt neatly folded on a minimalist wooden surface. The lighting is soft and diffused, creating subtle shadows that highlight the natural texture of the fabric. The overall aesthetic is clean, luxurious, and high-end retail, adhering to a light mode palette with warm natural tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6XBeyQOhP7SZblsmPGTVa7bhUAbb1NotzehgiKXWB0cm5q61InaZXnJiPsRgHb-YMVU1RVs9vwrxheqfe08oVyCoJn0_uClJ4rZzp3-JdLoKDEIEzaRtEel4x_570Vkx3cQss9Zq0lmBL3iv8NY8rKJ4g9mlZT_0PSDeEPK_UFYUy95fnC1T5t2abDWqexN702WnzqRBmTEobmJYeqyG1UTUMxc6WjqUBIKn-hXv_TRIwavqZe82HF6znuqDqjoWm1BdaJtSqH_s"/>
+<div class="absolute top-3 left-3 bg-surface px-2 py-1 font-label-caps text-label-caps text-on-surface border border-outline-variant">NEW</div>
+</div>
+<div class="flex flex-col">
+<h3 class="font-body-md text-body-md text-on-surface mb-1">Classic Linen Button-Down</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">$145.00</p>
+</div>
+</a>
+<a class="group product-hover block flex flex-col cursor-pointer" href="#">
+<div class="relative w-full aspect-[3/4] overflow-hidden bg-surface-container-low mb-4">
+<img alt="Product Image" class="w-full h-full object-cover" data-alt="A model wearing a relaxed fit beige linen tunic, standing against a plain white studio backdrop. The lighting is bright and even, typical of high-end editorial fashion photography. The colors are muted and natural, emphasizing the quiet luxury aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxNYMaIGiY-p4STn_m_s80mvKMbxA5K4jtL1Zlkab7Vse_TExYegf1G6mtAkE2DJaL9myAXoCr-TE-2jqrVOgC9kOlFRpd85c3c3TRMool-K5ri5UDHIQ947ozJ5RS8ZGI79320Fh0Ym9PqLf24RQDuudJZavQ1SSJW46_wMRMkmAxgUI0IC7ooyk7M4q9qrjho-0XO5-dU0WIq5Hsg2qDEIBSe4xMgllgpDQjTlWTpxGfhqSVPUWscjbaCzIEWOyxdVcjpwDxoBg"/>
+</div>
+<div class="flex flex-col">
+<h3 class="font-body-md text-body-md text-on-surface mb-1">Relaxed Linen Tunic</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">$180.00</p>
+</div>
+</a>
+<a class="group product-hover block flex flex-col cursor-pointer" href="#">
+<div class="relative w-full aspect-[3/4] overflow-hidden bg-surface-container-low mb-4">
+<img alt="Product Image" class="w-full h-full object-cover" data-alt="Close up shot of pure European linen bedding in a soft sage green color. The fabric is slightly rumpled, conveying a lived-in, comfortable elegance. Soft, natural daylight streams across the bed, highlighting the weave of the textile against a neutral background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXyWhJxcl9jgJQNTX6BTghyz6NkylNub73cQsHUjpm7OQSzTiCxCUAt1GDDeG6jwmVAEPxWeSHdbxPxUw7SLVJDGReA7xz3QUHxir1X6eaUcbWwEXATFX1Ni1s5oCdiRq8mlL33-r0NsBE-zIXaDW0VDR1WtNOlDYENqnbsXbk48tcPslWSyOYrxpR81paY5DTHwMJtQhnkpZ67l3tjSdcj0OFjru_NcOkAMjiq2H_Bbx29BTo4OrWd0ggjIlMfWT3b7I_3kzw34U"/>
+</div>
+<div class="flex flex-col">
+<h3 class="font-body-md text-body-md text-on-surface mb-1">European Linen Sheet Set</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">$295.00</p>
+</div>
+</a>
+<a class="group product-hover block flex flex-col cursor-pointer" href="#">
+<div class="relative w-full aspect-[3/4] overflow-hidden bg-surface-container-low mb-4">
+<img alt="Product Image" class="w-full h-full object-cover" data-alt="A pair of wide-leg white linen trousers draped casually over a mid-century modern chair. The room has a minimalist gallery feel with abundant negative space and light wood floors. The image feels airy, sophisticated, and aligned with a premium DTC brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzSla7cc3hHlW11fjW0XGmiIh41jvjIYbqps1Wtte32Ffr-TNuHQtyVKyfhDtqD6YFkHendPYsXUChYPmlaZ7JdOesNLNhQanwWJ-7uLSjgstyHuGncr1sLmvBN5QMoHMSOXrzssTpsCijYb9MiwCo5sgWKDxXjKkGJf3HDb64FjKOA_t2Zh1QQK2-DE2rrfV4IyPJgi7URNzWn-CW1aA9V8dQdkis7DspkUl7wlfZ5MbFPyCq5IKybC_fWkXdX5opjKMsLHVO3lk"/>
+</div>
+<div class="flex flex-col">
+<h3 class="font-body-md text-body-md text-on-surface mb-1">Wide Leg Linen Trousers</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">$165.00</p>
+</div>
+</a>
+<a class="group product-hover block flex flex-col cursor-pointer" href="#">
+<div class="relative w-full aspect-[3/4] overflow-hidden bg-surface-container-low mb-4">
+<img alt="Product Image" class="w-full h-full object-cover" data-alt="A collection of linen napkins in various muted earth tones neatly stacked on a concrete countertop. The lighting is dramatic but soft, creating a moody yet clean still-life composition. The textures of the linen are highly detailed, appealing to a luxury home goods aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ3DVH_UeidQIbG7A7L5Rvm8Jtrpbns9TNPDKUmk5u0NcqPP_Kq2mnAW8wCj4lw13onZNyfjjzxoWMlXo-CyfHkNglXrzv3ceEkcxVnLarr5QKYN8e0pT72DjRcl3-sdex7W60lY01nrCckU5DDWaNuV7ut_yJn4Vgz_YTwtxeBX2F6REemfdDdEuSkfqbD8imbKR7sTWJQCQTXxEo5rxMFaNzZO-RaHzhezB_JvTZ-qYdopbGNLzMOe6Uzahef0cevshZ8hW6OD8"/>
+</div>
+<div class="flex flex-col">
+<h3 class="font-body-md text-body-md text-on-surface mb-1">Linen Napkin Set</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">$48.00</p>
+</div>
+</a>
+<a class="group product-hover block flex flex-col cursor-pointer" href="#">
+<div class="relative w-full aspect-[3/4] overflow-hidden bg-surface-container-low mb-4">
+<img alt="Product Image" class="w-full h-full object-cover" data-alt="A minimalist black linen blazer hanging on a simple wooden hanger against an austere, off-white textured wall. The composition is stark and architectural, emphasizing the garment's silhouette and the brand's high-end, gallery-like visual language." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKPCRLe8AsMqXW2XLdy3hHga0EssI0iJMIvNwT_wayy5KoHDZ9MgeB1_148kV85QkLLCe1IuzmvUABaFYxNzSbfPS9vVwnCyHOJSvVftRiqiaZO90kqdIG4ceiB1JPq1igl_B9YbTzAd6jSXVBhsOn3HM35jKMZKVkgjs_bWY1MBivaem0Zc-Vrs2yqRTCKZWgY7WrJnOH7xY9PJ7oUSOsyUQmri2wEp6h7E5pUyv0Phlak0ITSh5hQ_1ocaWQLSxsrSYOC7KbGVo"/>
+</div>
+<div class="flex flex-col">
+<h3 class="font-body-md text-body-md text-on-surface mb-1">Tailored Linen Blazer</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">$285.00</p>
+</div>
+</a>
+</div>
+<div class="mt-16 flex justify-center">
+<button class="border border-primary text-on-surface px-8 py-3 font-button text-button hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                    Load More
+                </button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container dark:bg-surface-container-highest w-full py-section-gap-sm mt-auto">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="col-span-1 md:col-span-2 flex flex-col items-start mb-8 md:mb-0">
+<span class="font-headline-md text-headline-md text-primary dark:text-primary-fixed mb-4">LUXE</span>
+<p class="font-body-md text-body-md text-on-surface dark:text-on-surface-variant max-w-sm mb-6">Elevating everyday essentials through meticulous design and uncompromising quality.</p>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-colors">language</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-colors">mail</span>
+</div>
+</div>
+<div class="col-span-1 flex flex-col gap-3">
+<h4 class="font-label-caps text-label-caps text-on-surface dark:text-on-surface-variant mb-2">Information</h4>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-primary-container hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">Privacy Policy</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-primary-container hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">Terms of Service</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-primary-container hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">Shipping &amp; Returns</a>
+</div>
+<div class="col-span-1 flex flex-col gap-3">
+<h4 class="font-label-caps text-label-caps text-on-surface dark:text-on-surface-variant mb-2">Connect</h4>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-primary-container hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">Contact Us</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-on-primary-container hover:text-primary dark:hover:text-primary-fixed transition-all duration-200" href="#">Sustainability</a>
+</div>
+</div>
+<div class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto mt-12 pt-6 border-t border-surface-dim">
+<p class="font-label-caps text-label-caps text-on-surface-variant text-center">© 2024 LUXE STOREFRONT. ALL RIGHTS RESERVED.</p>
+</div>
+</footer>
+</body></html>

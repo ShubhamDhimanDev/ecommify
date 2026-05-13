@@ -1,66 +1,82 @@
+"use client";
+
 import Link from "next/link";
 import type { Product } from "@/lib/types/product";
+import { useCart } from "@/context/CartContext";
+import { ShoppingBag } from "lucide-react";
 
 export function ProductCard({ product, storeSlug }: { product: Product; storeSlug?: string }) {
-  const image = product.images?.[0]?.image_url || "https://via.placeholder.com/400x300?text=Product";
+  const image = product.images?.[0]?.image_url || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=500&fit=crop";
   const price = parseFloat(String(product.price ?? 0));
-  const rating = 4.5; // Placeholder rating
-  const reviewCount = 128; // Placeholder reviews
+  const { addItem, isLoading } = useCart();
 
   return (
     <Link href={`/${storeSlug}/products/${product.id}`}>
-      <article className="group flex flex-col rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition">
+      <article className="group flex flex-col h-full overflow-hidden rounded-lg bg-surface transition-all hover:shadow-[0_12px_24px_rgba(0,0,0,0.08)]">
         {/* Image Container */}
-        <div className="relative overflow-hidden bg-gray-100 h-64">
+        <div className="relative h-72 overflow-hidden bg-surface-low">
           <img
             src={image}
             alt={product.name}
-            className="h-full w-full object-cover group-hover:scale-105 transition duration-300"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
-          {product.stock && product.stock < 5 && (
-            <span className="absolute top-3 right-3 rounded-full bg-red-500 text-white text-xs font-bold px-3 py-1">
-              Only {product.stock} left
-            </span>
-          )}
-          {product.stock === 0 && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-              <span className="text-white font-bold">Out of Stock</span>
-            </div>
+          
+          {/* Stock Badge */}
+          {product.stock !== undefined && (
+            <>
+              {product.stock === 0 && (
+                <div className="absolute inset-0 bg-foreground/30 flex items-center justify-center">
+                  <span className="text-on-primary font-medium">Out of Stock</span>
+                </div>
+              )}
+              {product.stock > 0 && product.stock < 5 && (
+                <span className="absolute right-4 top-4 bg-error text-on-primary px-3 py-1 rounded-full text-xs font-semibold">
+                  Only {product.stock} left
+                </span>
+              )}
+            </>
           )}
         </div>
 
         {/* Content */}
-        <div className="flex flex-1 flex-col p-4">
-          <p className="text-xs font-medium text-blue-600 mb-1">{product.category_name || "Uncategorized"}</p>
-          <h3 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition">
+        <div className="flex flex-1 flex-col p-5">
+          {/* Category */}
+          {product.category_name && (
+            <p className="mb-2 text-xs font-medium uppercase tracking-widest text-secondary">
+              {product.category_name}
+            </p>
+          )}
+
+          {/* Product Name */}
+          <h3 className="headline-sm mb-3 line-clamp-2 text-foreground group-hover:text-secondary transition">
             {product.name}
           </h3>
 
-          {/* Rating */}
-          <div className="mt-2 flex items-center gap-1">
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <span key={i} className={i < Math.floor(rating) ? "text-yellow-400" : "text-gray-300"}>
-                  ★
-                </span>
-              ))}
-            </div>
-            <span className="text-xs text-gray-500">({reviewCount})</span>
-          </div>
-
           {/* Description */}
-          <p className="mt-2 text-sm text-gray-600 line-clamp-2">{product.description || "No description available"}</p>
+          {product.description && (
+            <p className="text-sm text-secondary line-clamp-2 mb-4 flex-grow">
+              {product.description}
+            </p>
+          )}
 
-          {/* Price and Button */}
-          <div className="mt-auto flex items-center justify-between pt-4">
-            <div>
-              <span className="text-lg font-bold text-gray-900">${price.toFixed(2)}</span>
-            </div>
+          {/* Footer: Price & Button */}
+          <div className="flex items-center justify-between pt-4 border-t border-outline-variant/30">
+            <span className="text-lg font-bold text-foreground">
+              ${price.toFixed(2)}
+            </span>
             <button
+              type="button"
               disabled={product.stock === 0}
-              className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
+              onClick={(e) => {
+                e.preventDefault();
+                addItem(product, 1).catch((error) => {
+                  console.error("Failed to add item to cart", error);
+                });
+              }}
+              className="inline-flex items-center justify-center gap-2 bg-primary px-4 py-2 rounded-lg text-on-primary font-medium text-sm hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Add to Cart
+              <ShoppingBag className="h-4 w-4" />
+              {isLoading ? "Adding..." : "Add"}
             </button>
           </div>
         </div>
