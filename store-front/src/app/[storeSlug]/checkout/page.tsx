@@ -4,6 +4,8 @@ import { FormEvent, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
+import { saveOrder, type LocalOrder } from "@/lib/orders/localOrders";
+import { ChevronRight, CheckCircle2 } from "lucide-react";
 
 export default function CheckoutPage() {
   const params = useParams();
@@ -45,14 +47,19 @@ export default function CheckoutPage() {
   const submitOrder = async () => {
     setSubmitting(true);
     try {
-      // Simulate order creation
-      // In production, this would call orderApi.createOrder()
-      
-      const orderData = {
-        items: items.map(item => ({
+      const orderId = `ORD-${Date.now()}`;
+
+      const orderData: LocalOrder = {
+        id: orderId,
+        store_slug: storeSlug,
+        status: "pending",
+        created_at: new Date().toISOString(),
+        items: items.map((item) => ({
           product_id: item.product.id,
+          product_name: item.product.name,
           quantity: item.quantity,
           unit_price: item.unitPrice,
+          image_url: item.product.images?.[0]?.image_url,
         })),
         shipping_address: {
           first_name: formData.firstName,
@@ -65,17 +72,16 @@ export default function CheckoutPage() {
           zip: formData.zip,
           country: formData.country,
         },
-        subtotal,
-        tax,
-        shipping,
-        total,
+        subtotal: Number(subtotal.toFixed(2)),
+        tax: Number(tax.toFixed(2)),
+        shipping: Number(shipping.toFixed(2)),
+        total: Number(total.toFixed(2)),
       };
 
-      console.log("Creating order:", orderData);
+      saveOrder(storeSlug, orderData);
 
-      // Clear cart and redirect to confirmation
       clearCart();
-      router.push(`/${storeSlug}/order-confirmation`);
+      router.push(`/${storeSlug}/order-confirmation?orderId=${encodeURIComponent(orderId)}`);
     } catch (error) {
       console.error("Order submission failed:", error);
       alert("Failed to create order. Please try again.");
@@ -86,284 +92,303 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-8 text-center">
-        <p className="text-lg text-gray-600 mb-4">Your cart is empty</p>
-        <a href={`/${storeSlug}/products`} className="text-blue-600 hover:text-blue-700 font-medium">
-          Continue Shopping
+      <div className="mx-auto max-w-4xl px-4 py-16 text-center">
+        <p className="mb-6 text-lg text-secondary">Your cart is empty</p>
+        <a
+          href={`/${storeSlug}/products`}
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-on-primary transition hover:opacity-90"
+        >
+          Continue Shopping <ChevronRight className="h-4 w-4" />
         </a>
       </div>
     );
   }
 
+  const steps = ["Shipping", "Payment", "Review"];
+  const stepsArray = ["shipping", "payment", "review"] as const;
+  const currentStepIndex = stepsArray.indexOf(step);
+
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">Checkout</h1>
-
-      {/* Step Indicator */}
-      <div className="mb-8 flex justify-between">
-        {["Shipping", "Payment", "Review"].map((stepName, idx) => (
-          <div key={stepName} className="flex items-center flex-1">
-            <div
-              className={`flex h-10 w-10 items-center justify-center rounded-full font-semibold ${
-                idx < (["shipping", "payment", "review"].indexOf(step))
-                  ? "bg-green-600 text-white"
-                  : step === ["shipping", "payment", "review"][idx]
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-600"
-              }`}
-            >
-              {idx < (["shipping", "payment", "review"].indexOf(step)) ? "✓" : idx + 1}
-            </div>
-            <span className={`ml-2 font-medium ${step === ["shipping", "payment", "review"][idx] ? "text-blue-600" : "text-gray-600"}`}>
-              {stepName}
-            </span>
-            {idx < 2 && <div className="ml-auto h-1 flex-1 bg-gray-200 mx-4" />}
-          </div>
-        ))}
+    <>
+      <div className="border-b border-outline-variant/30 px-4 py-8">
+        <div className="mx-auto max-w-7xl">
+          <h1 className="headline-md text-foreground">Checkout</h1>
+        </div>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        {/* Form */}
-        <div className="lg:col-span-2">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Shipping */}
-            {step === "shipping" && (
-              <div className="rounded-lg border border-gray-200 bg-white p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Shipping Address</h2>
+      <div className="mx-auto max-w-7xl px-4 py-12">
+        <div className="mb-12 flex max-w-2xl justify-between">
+          {steps.map((stepName, idx) => {
+            const isCompleted = idx < currentStepIndex;
+            const isActive = idx === currentStepIndex;
 
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                    <input
-                      type="text"
-                      value={formData.firstName}
-                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                      required
-                    />
+            return (
+              <div key={stepName} className="flex flex-1 items-center">
+                <div className="flex flex-1 items-center">
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-full font-semibold transition ${
+                      isCompleted
+                        ? "bg-primary text-on-primary"
+                        : isActive
+                          ? "bg-primary text-on-primary"
+                          : "border border-outline-variant/30 bg-surface-container text-secondary"
+                    }`}
+                  >
+                    {isCompleted ? <CheckCircle2 className="h-5 w-5" /> : idx + 1}
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                    <input
-                      type="text"
-                      value={formData.lastName}
-                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                      required
-                    />
-                  </div>
+                  <span className={`ml-3 font-medium transition ${isActive ? "text-foreground" : "text-secondary"}`}>
+                    {stepName}
+                  </span>
                 </div>
-
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                    required
+                {idx < 2 && (
+                  <div
+                    className={`ml-4 h-px flex-1 ${isCompleted || isActive ? "bg-primary" : "bg-outline-variant/30"}`}
                   />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                  <input
-                    type="text"
-                    value={formData.address}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-                    <input
-                      type="text"
-                      value={formData.city}
-                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
-                    <input
-                      type="text"
-                      value={formData.state}
-                      onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">ZIP Code</label>
-                    <input
-                      type="text"
-                      value={formData.zip}
-                      onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
-                    <select
-                      value={formData.country}
-                      onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                    >
-                      <option value="US">United States</option>
-                      <option value="CA">Canada</option>
-                      <option value="UK">United Kingdom</option>
-                    </select>
-                  </div>
-                </div>
+                )}
               </div>
-            )}
+            );
+          })}
+        </div>
 
-            {/* Payment */}
-            {step === "payment" && (
-              <div className="rounded-lg border border-gray-200 bg-white p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Payment Method</h2>
+        <div className="grid gap-12 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {step === "shipping" && (
+                <div className="rounded-lg border border-outline-variant/30 bg-surface p-8">
+                  <h2 className="headline-sm mb-8 text-foreground">Shipping Address</h2>
 
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Card Holder Name</label>
-                  <input
-                    type="text"
-                    value={formData.cardName}
-                    onChange={(e) => setFormData({ ...formData, cardName: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                    required
-                  />
-                </div>
+                  <div className="mb-6 grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-secondary">First Name</label>
+                      <input
+                        type="text"
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                        className="w-full rounded-lg border border-outline-variant/50 bg-surface px-4 py-3 transition focus:border-primary focus:outline-none"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-secondary">Last Name</label>
+                      <input
+                        type="text"
+                        value={formData.lastName}
+                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                        className="w-full rounded-lg border border-outline-variant/50 bg-surface px-4 py-3 transition focus:border-primary focus:outline-none"
+                        required
+                      />
+                    </div>
+                  </div>
 
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
-                  <input
-                    type="text"
-                    value={formData.cardNumber}
-                    onChange={(e) => setFormData({ ...formData, cardNumber: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                    placeholder="1234 5678 9012 3456"
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                  <div className="mb-6">
+                    <label className="mb-2 block text-sm font-medium text-secondary">Email</label>
                     <input
-                      type="text"
-                      value={formData.expiry}
-                      onChange={(e) => setFormData({ ...formData, expiry: e.target.value })}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                      placeholder="MM/YY"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full rounded-lg border border-outline-variant/50 bg-surface px-4 py-3 transition focus:border-primary focus:outline-none"
                       required
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">CVC</label>
+
+                  <div className="mb-6">
+                    <label className="mb-2 block text-sm font-medium text-secondary">Phone</label>
                     <input
-                      type="text"
-                      value={formData.cvc}
-                      onChange={(e) => setFormData({ ...formData, cvc: e.target.value })}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                      placeholder="123"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full rounded-lg border border-outline-variant/50 bg-surface px-4 py-3 transition focus:border-primary focus:outline-none"
                       required
                     />
                   </div>
-                </div>
-              </div>
-            )}
 
-            {/* Review */}
-            {step === "review" && (
-              <div className="rounded-lg border border-gray-200 bg-white p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Order Review</h2>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Shipping to:</p>
-                    <p className="font-semibold text-gray-900">
-                      {formData.address}, {formData.city}, {formData.state} {formData.zip}
-                    </p>
+                  <div className="mb-6">
+                    <label className="mb-2 block text-sm font-medium text-secondary">Street Address</label>
+                    <input
+                      type="text"
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      className="w-full rounded-lg border border-outline-variant/50 bg-surface px-4 py-3 transition focus:border-primary focus:outline-none"
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-6 grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-secondary">City</label>
+                      <input
+                        type="text"
+                        value={formData.city}
+                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                        className="w-full rounded-lg border border-outline-variant/50 bg-surface px-4 py-3 transition focus:border-primary focus:outline-none"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-secondary">State</label>
+                      <input
+                        type="text"
+                        value={formData.state}
+                        onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                        className="w-full rounded-lg border border-outline-variant/50 bg-surface px-4 py-3 transition focus:border-primary focus:outline-none"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-secondary">ZIP Code</label>
+                      <input
+                        type="text"
+                        value={formData.zip}
+                        onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
+                        className="w-full rounded-lg border border-outline-variant/50 bg-surface px-4 py-3 transition focus:border-primary focus:outline-none"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-secondary">Country</label>
+                      <select
+                        value={formData.country}
+                        onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                        className="w-full rounded-lg border border-outline-variant/50 bg-surface px-4 py-3 transition focus:border-primary focus:outline-none"
+                      >
+                        <option value="US">United States</option>
+                        <option value="CA">Canada</option>
+                        <option value="UK">United Kingdom</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-
-            {/* Navigation Buttons */}
-            <div className="flex gap-4">
-              {step !== "shipping" && (
-                <button
-                  type="button"
-                  onClick={() =>
-                    setStep(step === "payment" ? "shipping" : "payment")
-                  }
-                  className="flex-1 rounded-lg border border-gray-300 px-4 py-3 font-semibold text-gray-700 hover:bg-gray-50 transition"
-                >
-                  Back
-                </button>
               )}
-              <button
-                type="submit"
-                disabled={submitting}
-                className="flex-1 rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
-              >
-                {submitting ? "Processing..." : step === "review" ? "Place Order" : "Continue"}
-              </button>
-            </div>
-          </form>
-        </div>
 
-        {/* Order Summary */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 h-fit">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
+              {step === "payment" && (
+                <div className="rounded-lg border border-outline-variant/30 bg-surface p-8">
+                  <h2 className="headline-sm mb-8 text-foreground">Payment Method</h2>
 
-          <div className="space-y-4 mb-6 max-h-64 overflow-y-auto">
-            {items.map((item) => (
-              <div key={item.id} className="flex justify-between py-2 border-b last:border-b-0">
-                <span className="text-sm text-gray-600">{item.product.name} x{item.quantity}</span>
-                <span className="font-medium text-sm">${(item.unitPrice * item.quantity).toFixed(2)}</span>
+                  <div className="mb-6">
+                    <label className="mb-2 block text-sm font-medium text-secondary">Cardholder Name</label>
+                    <input
+                      type="text"
+                      value={formData.cardName}
+                      onChange={(e) => setFormData({ ...formData, cardName: e.target.value })}
+                      className="w-full rounded-lg border border-outline-variant/50 bg-surface px-4 py-3 transition focus:border-primary focus:outline-none"
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-6">
+                    <label className="mb-2 block text-sm font-medium text-secondary">Card Number</label>
+                    <input
+                      type="text"
+                      value={formData.cardNumber}
+                      onChange={(e) => setFormData({ ...formData, cardNumber: e.target.value })}
+                      className="w-full rounded-lg border border-outline-variant/50 bg-surface px-4 py-3 transition focus:border-primary focus:outline-none"
+                      placeholder="1234 5678 9012 3456"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-secondary">Expiry Date</label>
+                      <input
+                        type="text"
+                        value={formData.expiry}
+                        onChange={(e) => setFormData({ ...formData, expiry: e.target.value })}
+                        className="w-full rounded-lg border border-outline-variant/50 bg-surface px-4 py-3 transition focus:border-primary focus:outline-none"
+                        placeholder="MM/YY"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-secondary">CVV</label>
+                      <input
+                        type="text"
+                        value={formData.cvc}
+                        onChange={(e) => setFormData({ ...formData, cvc: e.target.value })}
+                        className="w-full rounded-lg border border-outline-variant/50 bg-surface px-4 py-3 transition focus:border-primary focus:outline-none"
+                        placeholder="123"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {step === "review" && (
+                <div className="rounded-lg border border-outline-variant/30 bg-surface p-8">
+                  <h2 className="headline-sm mb-6 text-foreground">Order Review</h2>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="mb-1 text-sm text-secondary">Shipping to:</p>
+                      <p className="font-semibold text-foreground">
+                        {formData.address}, {formData.city}, {formData.state} {formData.zip}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-4">
+                {step !== "shipping" && (
+                  <button
+                    type="button"
+                    onClick={() => setStep(step === "payment" ? "shipping" : "payment")}
+                    className="flex-1 rounded-lg border border-outline-variant/50 px-6 py-3 font-medium text-secondary transition hover:bg-surface-container"
+                  >
+                    Back
+                  </button>
+                )}
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex-1 rounded-lg bg-primary px-6 py-3 font-medium text-on-primary transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {submitting ? "Processing..." : step === "review" ? "Place Order" : "Continue"}
+                </button>
               </div>
-            ))}
+            </form>
           </div>
 
-          <div className="border-t space-y-3 pt-6">
-            <div className="flex justify-between text-gray-600">
-              <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>Tax (10%)</span>
-              <span>${tax.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>Shipping</span>
-              <span>{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span>
-            </div>
-            <div className="border-t pt-3 flex justify-between font-bold text-lg text-gray-900">
-              <span>Total</span>
-              <span>${total.toFixed(2)}</span>
+          <div className="lg:col-span-1">
+            <div className="sticky top-24 rounded-lg border border-outline-variant/30 bg-surface-container p-8">
+              <h2 className="mb-6 font-semibold text-foreground">Order Summary</h2>
+
+              <div className="mb-6 max-h-96 space-y-3 overflow-y-auto border-b border-outline-variant/30 pb-6">
+                {items.map((item) => (
+                  <div key={item.id} className="flex justify-between py-2">
+                    <span className="text-sm text-secondary">
+                      {item.product.name} x{item.quantity}
+                    </span>
+                    <span className="text-sm font-medium text-foreground">${(item.unitPrice * item.quantity).toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-secondary">Subtotal</span>
+                  <span className="font-medium text-foreground">${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-secondary">Tax (10%)</span>
+                  <span className="font-medium text-foreground">${tax.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-secondary">Shipping</span>
+                  <span className="font-medium text-foreground">{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span>
+                </div>
+                <div className="flex justify-between border-t border-outline-variant/30 pt-3">
+                  <span className="font-semibold text-foreground">Total</span>
+                  <span className="text-lg font-bold text-foreground">${total.toFixed(2)}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

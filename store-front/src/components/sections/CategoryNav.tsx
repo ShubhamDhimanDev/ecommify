@@ -19,7 +19,7 @@ export function CategoryNav() {
 
       try {
         const list = await categoryApi.list(storeSlug);
-        setCategories(list.slice(0, 8));
+        setCategories(list.slice(0, 6));
       } catch (error) {
         console.error("Failed to load categories", error);
       }
@@ -29,12 +29,12 @@ export function CategoryNav() {
   }, [storeSlug]);
 
   return (
-    <section className="section-shell p-4 md:p-6">
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-secondary">Categories</h2>
+    <section className="py-6">
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="label-caps text-secondary">Shop by Category</h2>
         {storeSlug && (
-          <Link href={`/${storeSlug}/products`} className="text-sm font-medium text-foreground underline-offset-2 hover:underline">
-            View all
+          <Link href={`/${storeSlug}/products`} className="text-sm font-medium text-foreground hover:text-secondary transition">
+            View All
           </Link>
         )}
       </div>
@@ -44,12 +44,12 @@ export function CategoryNav() {
       ) : categories.length === 0 ? (
         <p className="text-sm text-secondary">No categories published yet.</p>
       ) : (
-        <div className="flex flex-wrap gap-2">
+        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
           {categories.map((category) => (
             <Link
               key={category.id}
               href={`/${storeSlug}/products?category=${category.id}`}
-              className="rounded-full border border-outline-variant bg-surface px-4 py-2 text-sm text-secondary hover:border-outline hover:text-foreground"
+              className="group rounded-lg border border-outline-variant/50 bg-surface px-4 py-3 text-center text-sm font-medium text-secondary hover:border-outline hover:bg-surface-container transition"
             >
               {category.name}
             </Link>

@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { productApi } from "@/lib/api/client";
 import type { Product } from "@/lib/types/product";
+import { MoveRight } from "lucide-react";
 
 export function FeaturedProducts() {
   const params = useParams();
@@ -35,16 +37,24 @@ export function FeaturedProducts() {
   }, [storeSlug]);
 
   return (
-    <section className="space-y-4">
-      <div>
-        <h2 className="display-title text-3xl text-foreground">Featured Products</h2>
-        <p className="text-sm text-secondary">Live inventory from your tenant APIs.</p>
+    <section className="space-y-8 py-4">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h2 className="headline-md text-foreground">Featured Collection</h2>
+          <p className="mt-2 text-secondary">Explore our curated selection of premium products.</p>
+        </div>
+        <Link
+          href={`/${storeSlug}/products`}
+          className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-secondary transition whitespace-nowrap"
+        >
+          View All <MoveRight className="h-4 w-4" />
+        </Link>
       </div>
 
       {!storeSlug ? (
-        <div className="section-shell p-12 text-center text-secondary">Open a store slug route to preview products.</div>
+        <div className="py-16 text-center text-secondary">Open a store slug route to preview products.</div>
       ) : isLoading ? (
-        <div className="section-shell p-12 text-center text-secondary">Loading products...</div>
+        <div className="py-16 text-center text-secondary">Loading products...</div>
       ) : (
         <ProductGrid products={products} storeSlug={storeSlug} />
       )}

@@ -298,13 +298,19 @@ class PaymentGatewayController extends Controller
                 ], 404);
             }
 
-            // TODO: Implement actual connection test
-            // For now, just verify the configuration exists
-            // In production, you could make a test API call to the gateway
+            $gatewayConfig = $this->configManager->getStoreGatewayConfigByName($tenantId, $gateway);
+            $hasToken = ! empty($gatewayConfig?->oauthToken);
+
+            if (! $hasToken) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Gateway {$gateway} is missing OAuth access token",
+                ], 422);
+            }
 
             return response()->json([
                 'success' => true,
-                'message' => "Connection to {$gateway} is valid",
+                'message' => "Gateway {$gateway} configuration is active and token is present",
             ]);
         } catch (\InvalidArgumentException $e) {
             return response()->json([

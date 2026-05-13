@@ -1,12 +1,31 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
+import { useMemo } from "react";
+import { useSearchParams } from "next/navigation";
+import { getOrderById } from "@/lib/orders/localOrders";
 
 export default function OrderConfirmationPage() {
   const params = useParams();
-  const router = useRouter();
+  const searchParams = useSearchParams();
   const storeSlug = params?.storeSlug as string;
+  const orderId = searchParams.get("orderId") ?? "";
+
+  const order = useMemo(() => {
+    if (!orderId) return null;
+    return getOrderById(storeSlug, orderId);
+  }, [storeSlug, orderId]);
+
+  if (!order) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-12">
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-6 text-amber-800">
+          Order not found. Please check your account orders for latest purchases.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
@@ -17,7 +36,7 @@ export default function OrderConfirmationPage() {
         </div>
         <h1 className="text-4xl font-bold text-gray-900 mb-2">Thank You!</h1>
         <p className="text-xl text-gray-600 mb-4">Your order has been confirmed</p>
-        <p className="text-gray-600">Order #<strong>ORD-2024-001234</strong></p>
+        <p className="text-gray-600">Order #<strong>{order.id}</strong></p>
       </div>
 
       {/* Order Details */}
@@ -27,17 +46,17 @@ export default function OrderConfirmationPage() {
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-gray-600">Order Date:</span>
-              <span className="font-medium">{new Date().toLocaleDateString()}</span>
+              <span className="font-medium">{new Date(order.created_at).toLocaleDateString()}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Order Total:</span>
-              <span className="font-bold text-lg">$252.97</span>
+              <span className="font-bold text-lg">${order.total.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Status:</span>
               <span className="inline-flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-blue-600"></span>
-                <span className="font-medium">Pending Confirmation</span>
+                <span className="font-medium capitalize">{order.status}</span>
               </span>
             </div>
           </div>
@@ -47,30 +66,20 @@ export default function OrderConfirmationPage() {
         <div className="border-t pt-6 mb-6">
           <h3 className="font-bold text-gray-900 mb-4">Items Ordered</h3>
           <div className="space-y-4">
-            <div className="flex gap-4">
-              <img
-                src="https://via.placeholder.com/80x80?text=Headphones"
-                alt="Product"
-                className="h-20 w-20 rounded object-cover"
-              />
-              <div className="flex-1">
-                <p className="font-semibold text-gray-900">Premium Wireless Headphones</p>
-                <p className="text-sm text-gray-600">Quantity: 1</p>
-                <p className="text-sm font-medium text-gray-900">$199.99</p>
+            {order.items.map((item) => (
+              <div key={`${item.product_id}-${item.product_name}`} className="flex gap-4">
+                <img
+                  src={item.image_url || "https://via.placeholder.com/80x80?text=Product"}
+                  alt={item.product_name}
+                  className="h-20 w-20 rounded object-cover"
+                />
+                <div className="flex-1">
+                  <p className="font-semibold text-gray-900">{item.product_name}</p>
+                  <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                  <p className="text-sm font-medium text-gray-900">${(item.unit_price * item.quantity).toFixed(2)}</p>
+                </div>
               </div>
-            </div>
-            <div className="flex gap-4">
-              <img
-                src="https://via.placeholder.com/80x80?text=Cable"
-                alt="Product"
-                className="h-20 w-20 rounded object-cover"
-              />
-              <div className="flex-1">
-                <p className="font-semibold text-gray-900">USB-C Cable 2m</p>
-                <p className="text-sm text-gray-600">Quantity: 2</p>
-                <p className="text-sm font-medium text-gray-900">$29.98</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -78,9 +87,10 @@ export default function OrderConfirmationPage() {
         <div className="border-t pt-6">
           <h3 className="font-bold text-gray-900 mb-3">Shipping Address</h3>
           <p className="text-gray-600">
-            123 Main Street<br />
-            Anytown, ST 12345<br />
-            United States
+            {order.shipping_address.first_name} {order.shipping_address.last_name}<br />
+            {order.shipping_address.address}<br />
+            {order.shipping_address.city}, {order.shipping_address.state} {order.shipping_address.zip}<br />
+            {order.shipping_address.country}
           </p>
         </div>
       </div>
