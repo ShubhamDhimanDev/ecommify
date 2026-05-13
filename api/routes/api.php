@@ -182,6 +182,7 @@ Route::prefix('v1')->group(function () {
 
 Route::prefix('pub/v1')->group(function () {
     Route::get('stores/{slug}', [PublicController::class, 'storeBySlug']);
+    Route::get('stores/{slug}/categories', [PublicController::class, 'listCategories']);
     Route::get('stores/{slug}/products', [PublicController::class, 'listProducts']);
     Route::get('stores/{slug}/products/{id}', [PublicController::class, 'productDetail'])->whereUuid('id');
 

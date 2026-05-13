@@ -156,7 +156,7 @@ The store-front is designed to support 3 deployment modes per requirements:
     ↓
 StoreContext.fetchStore(slug)
     ↓
-/pub/v1/stores/{slug} API call
+/api/pub/v1/stores/{slug} API call
     ↓
 Store data loaded
     ↓
@@ -198,19 +198,19 @@ Route (app)
 ### Required API Endpoints (from Laravel API):
 
 1. **Public Store Lookup**
-   - `GET /pub/v1/stores/{slug}` → Returns Store object
+   - `GET /api/pub/v1/stores/{slug}` → Returns Store object
 
 2. **Customer Authentication**
-   - `POST /pub/v1/customers/auth/login` → Returns { token, customer }
-   - `POST /pub/v1/customers/auth/register` → Returns { token, customer }
+   - `POST /api/pub/v1/customers/auth/login` → Returns { token, customer }
+   - `POST /api/pub/v1/customers/auth/register` → Returns { token, customer }
 
 3. **Customer Profile**
    - `GET /api/v1/customers/me` (requires auth token)
    - `PUT /api/v1/customers/me` (requires auth token)
 
 4. **Product Catalog** (Public)
-   - `GET /pub/v1/products?filters` → Returns paginated products
-   - `GET /pub/v1/products/{id}` → Returns Product object
+   - `GET /api/pub/v1/products?filters` → Returns paginated products
+   - `GET /api/pub/v1/products/{id}` → Returns Product object
 
 5. **Cart Operations** (Auth required)
    - `POST /api/v1/carts` → Create cart

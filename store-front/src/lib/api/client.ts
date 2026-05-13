@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 interface ApiRequestOptions extends RequestInit {
   headers?: Record<string, string>;
@@ -24,109 +24,101 @@ function buildHeaders(customHeaders?: Record<string, string>): Record<string, st
   return headers;
 }
 
-export async function apiGet<T>(path: string, options?: ApiRequestOptions): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    method: "GET",
-    headers: buildHeaders(options?.headers),
-    cache: "no-store",
-  });
+async function makeRequest<T>(
+  path: string,
+  method: "GET" | "POST" | "PUT" | "DELETE" = "GET",
+  data?: unknown,
+  options?: ApiRequestOptions
+): Promise<T> {
+  const url = `${API_BASE}${path}`;
+  
+  try {
+    const response = await fetch(url, {
+      ...options,
+      method,
+      headers: buildHeaders(options?.headers),
+      body: data ? JSON.stringify(data) : undefined,
+      cache: "no-store",
+    });
 
-  if (!response.ok) {
-    throw new Error(`API request failed: ${response.status}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`API Error [${response.status}]: ${errorText}`);
+      throw new Error(`API request failed: ${response.status}`);
+    }
+
+    return response.json() as Promise<T>;
+  } catch (error) {
+    console.error(`Fetch error for ${url}:`, error);
+    throw error;
   }
+}
 
-  return response.json() as Promise<T>;
+export async function apiGet<T>(path: string, options?: ApiRequestOptions): Promise<T> {
+  return makeRequest<T>(path, "GET", undefined, options);
 }
 
 export async function apiPost<T>(path: string, data?: unknown, options?: ApiRequestOptions): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    method: "POST",
-    headers: buildHeaders(options?.headers),
-    body: data ? JSON.stringify(data) : undefined,
-  });
-
-  if (!response.ok) {
-    throw new Error(`API request failed: ${response.status}`);
-  }
-
-  return response.json() as Promise<T>;
+  return makeRequest<T>(path, "POST", data, options);
 }
 
 export async function apiPut<T>(path: string, data?: unknown, options?: ApiRequestOptions): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    method: "PUT",
-    headers: buildHeaders(options?.headers),
-    body: data ? JSON.stringify(data) : undefined,
-  });
-
-  if (!response.ok) {
-    throw new Error(`API request failed: ${response.status}`);
-  }
-
-  return response.json() as Promise<T>;
+  return makeRequest<T>(path, "PUT", data, options);
 }
 
 export async function apiDelete<T>(path: string, options?: ApiRequestOptions): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    method: "DELETE",
-    headers: buildHeaders(options?.headers),
-  });
-
-  if (!response.ok) {
-    throw new Error(`API request failed: ${response.status}`);
-  }
-
-  return response.json() as Promise<T>;
+  return makeRequest<T>(path, "DELETE", undefined, options);
 }
 
-// Customer API
+// Customer API (public for auth, authenticated for profile)
 export const customerApi = {
-  login: (email: string, password: string) =>
-    apiPost("/v1/customers/auth/login", { email, password }),
-  register: (data: { email: string; password: string; first_name: string; last_name?: string }) =>
-    apiPost("/v1/customers/auth/register", data),
-  getProfile: () => apiGet("/v1/customers/me"),
-  updateProfile: (data: unknown) => apiPut("/v1/customers/me", data),
+  login: (storeSlug: string, email: string, password: string) =>
+    apiPost("/api/pub/v1/customers/auth/login", { store_slug: storeSlug, email, password }),
+  register: (storeSlug: string, data: { email: string; password: string; first_name: string; last_name?: string }) =>
+    apiPost("/api/pub/v1/customers/auth/register", { store_slug: storeSlug, ...data }),
+  getProfile: () => apiGet("/api/v1/auth/me"),
+  updateProfile: (data: unknown) => apiPut("/api/v1/auth/me", data),
 };
 
 // Store API (public)
 export const storeApi = {
-  getBySlug: (slug: string) => apiGet(`/pub/v1/stores/${slug}`),
+  getBySlug: (slug: string) => apiGet(`/api/pub/v1/stores/${slug}`),
 };
 
-// Cart API
+// Cart API (authenticated, scoped to store/tenant)
 export const cartApi = {
-  getCart: (cartId: string) => apiGet(`/v1/carts/${cartId}`),
-  createCart: (merchantId: string) =>
-    apiPost("/v1/carts", { merchant_id: merchantId }),
-  addItem: (cartId: string, data: unknown) =>
-    apiPost(`/v1/carts/${cartId}/items`, data),
-  removeItem: (cartId: string, itemId: string) =>
-    apiDelete(`/v1/carts/${cartId}/items/${itemId}`),
-  checkout: (cartId: string) =>
-    apiPost(`/v1/carts/${cartId}/checkout`, {}),
+  getCart: (storeSlug: string, cartId: string) => apiGet(`/api/v1/store/${storeSlug}/carts/${cartId}`),
+  createCart: (storeSlug: string) =>
+    apiPost(`/api/v1/store/${storeSlug}/carts`, {}),
+  addItem: (storeSlug: string, cartId: string, data: unknown) =>
+    apiPost(`/api/v1/store/${storeSlug}/carts/${cartId}/items`, data),
+  removeItem: (storeSlug: string, cartId: string, itemId: string) =>
+    apiDelete(`/api/v1/store/${storeSlug}/carts/${cartId}/items/${itemId}`),
+  checkout: (storeSlug: string, cartId: string) =>
+    apiPost(`/api/v1/store/${storeSlug}/carts/${cartId}/checkout`, {}),
 };
 
-// Product API
+// Product API (public)
 export const productApi = {
-  list: (filters?: Record<string, unknown>) => {
+  list: (slug: string, filters?: Record<string, unknown>) => {
     const query = new URLSearchParams();
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined) query.append(key, String(value));
       });
     }
-    return apiGet(`/pub/v1/products?${query.toString()}`);
+    return apiGet(`/api/pub/v1/stores/${slug}/products?${query.toString()}`);
   },
-  getById: (id: string) => apiGet(`/pub/v1/products/${id}`),
+  getById: (slug: string, id: string) => apiGet(`/api/pub/v1/stores/${slug}/products/${id}`),
 };
 
-// Order API
+// Category API (public)
+export const categoryApi = {
+  list: (slug: string) => apiGet(`/api/pub/v1/stores/${slug}/categories`),
+};
+
+// Order API (authenticated, scoped to store/tenant)
 export const orderApi = {
-  list: () => apiGet("/v1/orders"),
-  getById: (id: string) => apiGet(`/v1/orders/${id}`),
+  list: (storeSlug: string) => apiGet(`/api/v1/store/${storeSlug}/orders`),
+  getById: (storeSlug: string, id: string) => apiGet(`/api/v1/store/${storeSlug}/orders/${id}`),
 };

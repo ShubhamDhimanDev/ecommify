@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useStore } from "@/context/StoreContext";
 import { Placeholder } from "@/components/ui/Placeholder";
 import { useParams } from "next/navigation";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 
 export default function StoreLayout({
   children,
@@ -36,5 +38,11 @@ export default function StoreLayout({
     return <Placeholder title="Store Not Available" />;
   }
 
-  return <>{children}</>;
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Header storeSlug={storeSlug} />
+      <main className="flex-1">{children}</main>
+      <Footer storeSlug={storeSlug} />
+    </div>
+  );
 }
