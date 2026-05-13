@@ -143,6 +143,11 @@ class CategoryController extends Controller
             return response()->json(['message' => 'Category has child categories. Delete children first.'], 409);
         }
 
+        $hasProducts = \App\Models\Product::query()->where('category_id', $category->id)->exists();
+        if ($hasProducts) {
+            return response()->json(['message' => 'Category has products assigned to it. Reassign or delete products first.'], 409);
+        }
+
         $category->delete();
 
         return response()->json(status: 204);

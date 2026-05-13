@@ -25,10 +25,10 @@ type StoreContextValue = {
 const StoreContext = createContext<StoreContextValue | null>(null);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, isLoading: authIsLoading, user } = useAuth();
   const [stores, setStores] = useState<Tenant[]>([]);
   const [activeStoreId, setActiveStoreId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // true until auth + stores resolve
 
   const syncSelection = useCallback((nextStores: Tenant[]) => {
     const storedId = activeStoreStorage.get();
@@ -70,14 +70,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [isAuthenticated, syncSelection]);
 
   useEffect(() => {
+    if (authIsLoading) return; // wait for auth to settle before acting
+
     if (!isAuthenticated) {
       activeStoreStorage.clear();
+      setStores([]);
+      setActiveStoreId(null);
+      setIsLoading(false);
       return;
     }
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void refreshStores();
-  }, [isAuthenticated, refreshStores, user?.id, user?.tenant_id]);
+  }, [isAuthenticated, authIsLoading, refreshStores, user?.id, user?.tenant_id]);
 
   const selectStore = useCallback(
     (storeId: string) => {

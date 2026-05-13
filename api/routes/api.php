@@ -128,35 +128,36 @@ Route::prefix('v1')->group(function () {
             // Categories
             Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
             Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
-            Route::get('categories/{id}', [CategoryController::class, 'show'])->name('categories.show');
-            Route::put('categories/{id}', [CategoryController::class, 'update'])->name('categories.update');
-            Route::delete('categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+            Route::get('categories/{id}', [CategoryController::class, 'show'])->name('categories.show')->whereUuid('id');
+            Route::put('categories/{id}', [CategoryController::class, 'update'])->name('categories.update')->whereUuid('id');
+            Route::delete('categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy')->whereUuid('id');
 
             // Products
             Route::get('products', [ProductController::class, 'index'])->name('products.index');
             Route::post('products', [ProductController::class, 'store'])->name('products.store');
-            Route::get('products/{id}', [ProductController::class, 'show'])->name('products.show');
-            Route::put('products/{id}', [ProductController::class, 'update'])->name('products.update');
-            Route::delete('products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
+            Route::get('products/{id}', [ProductController::class, 'show'])->name('products.show')->whereUuid('id');
+            Route::post('products/{id}/variants', [ProductController::class, 'createVariant'])->name('products.variants.store')->whereUuid('id');
+            Route::put('products/{id}', [ProductController::class, 'update'])->name('products.update')->whereUuid('id');
+            Route::delete('products/{id}', [ProductController::class, 'destroy'])->name('products.destroy')->whereUuid('id');
 
             // Carts and checkout
             Route::post('carts', [CartController::class, 'store'])->name('carts.store');
-            Route::get('carts/{id}', [CartController::class, 'show'])->name('carts.show');
-            Route::post('carts/{id}/items', [CartController::class, 'addItem'])->name('carts.items.add');
-            Route::delete('carts/{id}/items/{itemId}', [CartController::class, 'removeItem'])->name('carts.items.remove');
-            Route::post('carts/{id}/checkout', [CartController::class, 'checkout'])->name('carts.checkout');
+            Route::get('carts/{id}', [CartController::class, 'show'])->name('carts.show')->whereUuid('id');
+            Route::post('carts/{id}/items', [CartController::class, 'addItem'])->name('carts.items.add')->whereUuid('id');
+            Route::delete('carts/{id}/items/{itemId}', [CartController::class, 'removeItem'])->name('carts.items.remove')->whereUuid('id')->whereUuid('itemId');
+            Route::post('carts/{id}/checkout', [CartController::class, 'checkout'])->name('carts.checkout')->whereUuid('id');
 
             // Orders
             Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
-            Route::get('orders/{id}', [OrderController::class, 'show'])->name('orders.show');
-            Route::patch('orders/{id}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
+            Route::get('orders/{id}', [OrderController::class, 'show'])->name('orders.show')->whereUuid('id');
+            Route::patch('orders/{id}/status', [OrderController::class, 'updateStatus'])->name('orders.status')->whereUuid('id');
 
             // Customers
             Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
             Route::post('customers', [CustomerController::class, 'store'])->name('customers.store');
-            Route::get('customers/{id}', [CustomerController::class, 'show'])->name('customers.show');
-            Route::put('customers/{id}', [CustomerController::class, 'update'])->name('customers.update');
-            Route::delete('customers/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
+            Route::get('customers/{id}', [CustomerController::class, 'show'])->name('customers.show')->whereUuid('id');
+            Route::put('customers/{id}', [CustomerController::class, 'update'])->name('customers.update')->whereUuid('id');
+            Route::delete('customers/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy')->whereUuid('id');
 
             // Inventory
             Route::get('inventory/stocks', [InventoryController::class, 'stocks'])->name('inventory.stocks');
@@ -168,8 +169,8 @@ Route::prefix('v1')->group(function () {
 
             // Payments (stub)
             Route::post('payments', [PaymentController::class, 'store'])->name('payments.store');
-            Route::get('payments/{id}', [PaymentController::class, 'show'])->name('payments.show');
-            Route::post('payments/{id}/refund', [PaymentController::class, 'refund'])->name('payments.refund');
+            Route::get('payments/{id}', [PaymentController::class, 'show'])->name('payments.show')->whereUuid('id');
+            Route::post('payments/{id}/refund', [PaymentController::class, 'refund'])->name('payments.refund')->whereUuid('id');
 
             // Notifications (stub)
             Route::post('notifications/send', [NotificationController::class, 'send'])->name('notifications.send');
@@ -181,8 +182,9 @@ Route::prefix('v1')->group(function () {
 
 Route::prefix('pub/v1')->group(function () {
     Route::get('stores/{slug}', [PublicController::class, 'storeBySlug']);
+    Route::get('stores/{slug}/categories', [PublicController::class, 'listCategories']);
     Route::get('stores/{slug}/products', [PublicController::class, 'listProducts']);
-    Route::get('stores/{slug}/products/{id}', [PublicController::class, 'productDetail']);
+    Route::get('stores/{slug}/products/{id}', [PublicController::class, 'productDetail'])->whereUuid('id');
 
     Route::post('customers/auth/login', [CustomerController::class, 'login']);
     Route::post('customers/auth/register', [CustomerController::class, 'register']);

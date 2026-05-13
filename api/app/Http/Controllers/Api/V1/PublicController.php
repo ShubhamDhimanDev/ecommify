@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Tenant;
 use Illuminate\Http\JsonResponse;
@@ -26,6 +27,27 @@ class PublicController extends Controller
         return response()->json(['store' => $store]);
     }
 
+    public function listCategories(string $slug): JsonResponse
+    {
+        $store = Tenant::query()
+            ->where('slug', $slug)
+            ->where('status', 'active')
+            ->first();
+
+        if (! $store) {
+            return response()->json(['message' => 'Store not found.'], 404);
+        }
+
+        $categories = Category::query()
+            ->withoutGlobalScopes()
+            ->where('tenant_id', $store->id)
+            ->orderBy('depth')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json(['categories' => $categories]);
+    }
+
     public function listProducts(Request $request, string $slug): JsonResponse
     {
         $store = Tenant::query()
@@ -41,7 +63,7 @@ class PublicController extends Controller
             ->withoutGlobalScopes()
             ->with([
                 'images:id,product_id,image_url,media_type,storage_path,alt_text,sort_order,file_size,mime_type,disk',
-                'variants:id,product_id,name,sku,price,stock',
+                'variants:id,parent_product_id,name,sku,price,stock,description,meta_title,meta_description,meta_keywords,specifications',
                 'tags:id,product_id,tag_name',
             ])
             ->where('tenant_id', $store->id)
@@ -73,7 +95,7 @@ class PublicController extends Controller
             ->withoutGlobalScopes()
             ->with([
                 'images:id,product_id,image_url,media_type,storage_path,alt_text,sort_order,file_size,mime_type,disk',
-                'variants:id,product_id,name,sku,price,stock',
+                'variants:id,parent_product_id,name,sku,price,stock,description,meta_title,meta_description,meta_keywords,specifications',
                 'tags:id,product_id,tag_name',
             ])
             ->where('tenant_id', $store->id)

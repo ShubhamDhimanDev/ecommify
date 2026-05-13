@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
+import { AuthProvider } from "@/context/AuthContext";
+import { StoreProvider } from "@/context/StoreContext";
+import { CartProvider } from "@/context/CartContext";
 
 export const metadata: Metadata = {
   title: "Ecommify Storefront",
-  description: "Public storefront placeholders for Phase 1",
+  description: "Public storefront for Ecommify SaaS platform",
 };
 
 export default function RootLayout({
@@ -14,9 +16,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full bg-zinc-50 text-zinc-900">
-        <Header />
-        <main className="mx-auto w-full max-w-6xl px-4 py-6">{children}</main>
+      <body className="min-h-full bg-white text-gray-900">
+        <AuthProvider>
+          <CartProvider>
+            <StoreProvider>
+              <div className="flex flex-col min-h-screen">
+                <main className="flex-1">{children}</main>
+              </div>
+            </StoreProvider>
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );
