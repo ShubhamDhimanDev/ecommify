@@ -1,19 +1,13 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
+import { Nunito_Sans } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { StoreProvider } from "@/context/StoreContext";
 import { CartProvider } from "@/context/CartContext";
 
-const bodyFont = Plus_Jakarta_Sans({
+const bodyFont = Nunito_Sans({
   subsets: ["latin"],
   variable: "--font-body",
-  display: "swap",
-});
-
-const displayFont = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-display",
   display: "swap",
 });
 
@@ -29,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className={`${bodyFont.variable} ${displayFont.variable} min-h-full bg-background text-foreground`}>
+      <body className={`${bodyFont.variable} min-h-full bg-background text-foreground`}>
         <AuthProvider>
           <CartProvider>
             <StoreProvider>

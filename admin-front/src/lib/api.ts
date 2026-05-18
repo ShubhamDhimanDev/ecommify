@@ -1,7 +1,9 @@
 import type {
+  ActiveThemePayload,
   ApiValidationError,
   AuthTokenResponse,
   Tenant,
+  ThemeCatalogItem,
   User,
 } from "@/lib/types";
 
@@ -682,6 +684,25 @@ export const orderApi = {
 
   updateStatus: (tenantSlug: string, id: string, data: { status: string; note?: string }) =>
     api.patch<{ order: unknown }>(`/store/${encodeURIComponent(tenantSlug)}/orders/${id}/status`, data),
+};
+
+export const themeApi = {
+  list: () =>
+    api.get<{ data: ThemeCatalogItem[] }>("/themes"),
+
+  getStoreTheme: (tenantSlug: string) =>
+    api.get<{ data: ActiveThemePayload }>(`/store/${encodeURIComponent(tenantSlug)}/theme`),
+
+  activate: (tenantSlug: string, themeId: string) =>
+    api.post<{ message: string; data: ActiveThemePayload }>(
+      `/store/${encodeURIComponent(tenantSlug)}/themes/${themeId}/activate`
+    ),
+
+  updateConfig: (tenantSlug: string, customConfig: Record<string, unknown>) =>
+    api.put<{ message: string; data: ActiveThemePayload }>(
+      `/store/${encodeURIComponent(tenantSlug)}/theme/config`,
+      { custom_config: customConfig }
+    ),
 };
 
 // ─── Payment Gateway endpoints ────────────────────────────────────────────────

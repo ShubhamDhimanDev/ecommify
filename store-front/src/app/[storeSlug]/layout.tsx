@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useStore } from "@/context/StoreContext";
-import { Placeholder } from "@/components/ui/Placeholder";
 import { useParams } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -15,7 +14,7 @@ export default function StoreLayout({
 }) {
   const params = useParams();
   const storeSlug = params?.storeSlug as string;
-  const { store, isLoading, error, fetchStore } = useStore();
+  const { store, fetchStore } = useStore();
 
   useEffect(() => {
     if (storeSlug) {
@@ -23,23 +22,7 @@ export default function StoreLayout({
     }
   }, [storeSlug, fetchStore]);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-zinc-500">Loading store...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return <Placeholder title="Store Not Found" />;
-  }
-
-  if (!store) {
-    return <Placeholder title="Store Not Available" />;
-  }
-
-  const resolvedTheme = resolveTheme(store.theme ?? store.settings?.theme);
+  const resolvedTheme = resolveTheme(store?.theme ?? store?.settings?.theme);
 
   return (
     <div className="flex min-h-screen flex-col" style={themeToCssVars(resolvedTheme)}>

@@ -3,10 +3,6 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\Admin\TenantController;
-use App\Http\Controllers\Api\V1\CartController;
-use App\Http\Controllers\Api\V1\CategoryController;
-use App\Http\Controllers\Api\V1\CustomerController;
-use App\Http\Controllers\Api\V1\InventoryController;
 use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\V1\Auth\LoginController;
 use App\Http\Controllers\Api\V1\Auth\LogoutController;
@@ -14,13 +10,19 @@ use App\Http\Controllers\Api\V1\Auth\MeController;
 use App\Http\Controllers\Api\V1\Auth\PasswordController;
 use App\Http\Controllers\Api\V1\Auth\RegisterController;
 use App\Http\Controllers\Api\V1\Auth\TwoFactorController;
+use App\Http\Controllers\Api\V1\CartController;
+use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\CustomerController;
+use App\Http\Controllers\Api\V1\InventoryController;
+use App\Http\Controllers\Api\V1\Merchant\StoreController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PaymentGatewayController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\PublicController;
-use App\Http\Controllers\Api\V1\Merchant\StoreController;
+use App\Http\Controllers\Api\V1\StoreThemeController;
+use App\Http\Controllers\Api\V1\ThemeController;
 use App\Http\Middleware\EnsureTenantIsActive;
 use App\Http\Middleware\EnsureUserBelongsToTenant;
 use App\Http\Middleware\InitializeTenancyFromSlug;
@@ -33,6 +35,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('v1')->group(function () {
+
+    // -----------------------------------------------------------------------
+    // Themes  (public catalog)
+    // -----------------------------------------------------------------------
+    Route::get('themes', [ThemeController::class, 'index'])->name('themes.index');
 
     // -----------------------------------------------------------------------
     // Auth  (public)
@@ -123,8 +130,15 @@ Route::prefix('v1')->group(function () {
             // Example placeholder — expand as you build store features
             Route::get('/', fn () => response()->json([
                 'message' => 'Store routes are working. Add product, order, customer routes here.',
-                'tenant'  => tenant()?->only(['id', 'name', 'slug']),
+                'tenant' => tenant()?->only(['id', 'name', 'slug']),
             ]))->name('index');
+
+            // Themes
+            Route::post('themes/{theme_id}/activate', [StoreThemeController::class, 'activate'])
+                ->name('themes.activate')
+                ->whereUuid('theme_id');
+            Route::get('theme', [StoreThemeController::class, 'show'])->name('theme.show');
+            Route::put('theme/config', [StoreThemeController::class, 'updateConfig'])->name('theme.config.update');
 
             // Categories
             Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
@@ -193,6 +207,7 @@ Route::prefix('v1')->group(function () {
 
 Route::prefix('pub/v1')->group(function () {
     Route::get('stores/{slug}', [PublicController::class, 'storeBySlug']);
+    Route::get('stores/{slug}/theme', [PublicController::class, 'storeTheme']);
     Route::get('stores/{slug}/categories', [PublicController::class, 'listCategories']);
     Route::get('stores/{slug}/products', [PublicController::class, 'listProducts']);
     Route::get('stores/{slug}/products/{id}', [PublicController::class, 'productDetail'])->whereUuid('id');

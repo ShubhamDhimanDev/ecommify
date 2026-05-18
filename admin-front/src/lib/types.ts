@@ -152,6 +152,69 @@ export interface PaymentGatewayConfig {
   connected_at?: string;
 }
 
+// ─── Theme Engine ─────────────────────────────────────────────────────────────
+
+export interface ThemeCatalogItem {
+  id: string;
+  name: string;
+  code: string;
+  version: string;
+  preview_image: string | null;
+  is_public: boolean;
+  created_at: string | null;
+}
+
+export interface ThemeStoreTheme {
+  id: string;
+  store_id: string;
+  theme_id: string;
+  is_active: boolean;
+  custom_config: ThemeCustomConfig;
+  created_at: string | null;
+}
+
+export interface ThemeSettingFieldOption {
+  label: string;
+  value: string;
+}
+
+export interface ThemeSettingField {
+  key: string;
+  label?: string;
+  type?: string;
+  placeholder?: string;
+  hint?: string;
+  required?: boolean;
+  options?: ThemeSettingFieldOption[];
+}
+
+export interface ThemeSection {
+  id?: string;
+  type: string;
+  settings?: Record<string, unknown>;
+  settings_schema?: ThemeSettingField[];
+  [key: string]: unknown;
+}
+
+export interface ThemePageConfig {
+  sections?: ThemeSection[];
+  [key: string]: unknown;
+}
+
+export interface ThemeConfig {
+  pages?: Record<string, ThemePageConfig>;
+  [key: string]: unknown;
+}
+
+export type ThemeCustomConfig = Record<string, unknown>;
+
+export interface ActiveThemePayload {
+  store_theme: ThemeStoreTheme;
+  theme: ThemeCatalogItem;
+  custom_config: ThemeCustomConfig;
+  config: ThemeConfig;
+}
+
 // ─── API Errors ────────────────────────────────────────────────────────────────
 
 export interface ApiValidationError {

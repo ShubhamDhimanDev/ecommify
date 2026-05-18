@@ -8,8 +8,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Tenant;
+use App\Models\Theme;
+use App\Services\ThemeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use RuntimeException;
 
 class PublicController extends Controller
 {
@@ -106,5 +109,49 @@ class PublicController extends Controller
         }
 
         return response()->json(['product' => $product]);
+    }
+
+    public function storeTheme(Request $request, string $slug, ThemeService $themeService): JsonResponse
+    {
+        $store = Tenant::query()
+            ->where('slug', $slug)
+            ->where('status', 'active')
+            ->first();
+
+        if (! $store) {
+            return response()->json(['message' => 'Store not found.'], 404);
+        }
+
+        $previewThemeCode = $request->string('preview_theme')->trim()->value();
+
+        try {
+            if ($previewThemeCode !== '') {
+                $previewTheme = Theme::query()
+                    ->where('code', $previewThemeCode)
+                    ->where('is_public', true)
+                    ->first();
+
+                if (! $previewTheme) {
+                    return response()->json([
+                        'message' => 'Preview theme not found.',
+                    ], 404);
+                }
+
+                $payload = $themeService->getPreviewThemePayload($store, $previewTheme);
+            } else {
+                $payload = $themeService->getActiveThemePayload($store);
+            }
+        } catch (RuntimeException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+            ], 404);
+        }
+
+        return response()->json([
+            'data' => [
+                'theme_code' => $payload['theme']['code'] ?? null,
+                ...$payload,
+            ],
+        ]);
     }
 }

@@ -1,0 +1,267 @@
+{
+  "pages": {
+    "header": {
+      "sections": [
+        {
+          "type": "mega-menu",
+          "settings": {
+            "announcement_text": "Clean ingredients. Better candles. Free shipping over $75.",
+            "menu_items": [
+              { "label": "Home", "href": "" },
+              { "label": "Shop", "href": "/products" },
+              { "label": "Best Sellers", "href": "/products?sort=popular" }
+            ],
+            "mega_groups": [
+              {
+                "title": "Shop by Scent Family",
+                "links": [
+                  { "label": "Floral", "href": "/products?family=floral" },
+                  { "label": "Woody", "href": "/products?family=woody" },
+                  { "label": "Fresh", "href": "/products?family=fresh" }
+                ]
+              },
+              {
+                "title": "Resources",
+                "links": [
+                  { "label": "Candle Care", "href": "/candle-care" },
+                  { "label": "FAQ", "href": "/faq" },
+                  { "label": "Contact", "href": "/contact" }
+                ]
+              }
+            ]
+          },
+          "settings_schema": [
+            { "key": "announcement_text", "label": "Announcement Text", "type": "text" },
+            { "key": "menu_items", "label": "Primary Menu Items", "type": "json", "hint": "Array of { label, href }" },
+            { "key": "mega_groups", "label": "Mega Menu Groups", "type": "json", "hint": "Array of { title, links[] }" }
+          ]
+        }
+      ]
+    },
+    "footer": {
+      "sections": [
+        {
+          "type": "footer-columns",
+          "settings": {
+            "support_email": "hello@candlescience.example",
+            "support_phone": "+1 (800) 555-0188",
+            "address": "42 Foundry Lane, Durham, NC 27701"
+          },
+          "settings_schema": [
+            { "key": "support_email", "label": "Support Email", "type": "text" },
+            { "key": "support_phone", "label": "Support Phone", "type": "text" },
+            { "key": "address", "label": "Address", "type": "textarea" }
+          ]
+        }
+      ]
+    },
+    "home": {
+      "sections": [
+        {
+          "type": "announcement-bar",
+          "settings": {
+            "text": "Limited launch: free wick trimmer with orders above $100",
+            "linkLabel": "Shop launch collection",
+            "linkHref": "/products"
+          },
+          "settings_schema": [
+            { "key": "text", "label": "Announcement Text", "type": "text" },
+            { "key": "linkLabel", "label": "Link Label", "type": "text" },
+            { "key": "linkHref", "label": "Link URL", "type": "text" }
+          ]
+        },
+        {
+          "type": "hero",
+          "settings": {
+            "title": "Pour-worthy fragrance, shelf-worthy design",
+            "subtitle": "Build confidence with premium materials, curated scent profiles, and trusted craftsmanship.",
+            "eyebrow": "CandleScience-inspired storefront",
+            "heroImage": "https://images.unsplash.com/photo-1603006905393-cf9cc6f6f47d?w=1200&h=1200&fit=crop",
+            "backgroundImage": "",
+            "primaryCtaLabel": "Shop candles",
+            "primaryCtaHref": "/products",
+            "secondaryCtaLabel": "Learn more",
+            "secondaryCtaHref": ""
+          },
+          "settings_schema": [
+            { "key": "title", "label": "Title", "type": "text" },
+            { "key": "subtitle", "label": "Subtitle", "type": "text" },
+            { "key": "eyebrow", "label": "Eyebrow", "type": "text" },
+            { "key": "heroImage", "label": "Hero Image URL", "type": "media" },
+            { "key": "backgroundImage", "label": "Background Image URL", "type": "media" },
+            { "key": "primaryCtaLabel", "label": "Primary CTA Label", "type": "text" },
+            { "key": "primaryCtaHref", "label": "Primary CTA URL", "type": "text" },
+            { "key": "secondaryCtaLabel", "label": "Secondary CTA Label", "type": "text" },
+            { "key": "secondaryCtaHref", "label": "Secondary CTA URL", "type": "text" }
+          ]
+        },
+        {
+          "type": "featured-categories",
+          "settings": {
+            "title": "Shop by mood",
+            "subtitle": "Fast paths into the most-shopped fragrance families.",
+            "categories": [
+              { "label": "Warm + Cozy", "href": "/products?mood=cozy" },
+              { "label": "Fresh + Clean", "href": "/products?mood=fresh" },
+              { "label": "Bold + Spiced", "href": "/products?mood=spiced" },
+              { "label": "Seasonal", "href": "/products?mood=seasonal" }
+            ]
+          },
+          "settings_schema": [
+            { "key": "title", "label": "Title", "type": "text" },
+            { "key": "subtitle", "label": "Subtitle", "type": "text" },
+            { "key": "categories", "label": "Categories", "type": "json", "hint": "Array of { label, href }" }
+          ]
+        },
+        {
+          "type": "product-grid",
+          "settings": {
+            "title": "Featured products",
+            "subtitle": "Best-performing products tuned for conversion.",
+            "ctaLabel": "View all products",
+            "ctaHref": "/products",
+            "products": []
+          },
+          "settings_schema": [
+            { "key": "title", "label": "Heading", "type": "text" },
+            { "key": "subtitle", "label": "Subtitle", "type": "text" },
+            { "key": "ctaLabel", "label": "CTA Label", "type": "text" },
+            { "key": "ctaHref", "label": "CTA URL", "type": "text" },
+            { "key": "products", "label": "Manual Products", "type": "json", "hint": "Array of { title, price, image, href, badge }" }
+          ]
+        },
+        {
+          "type": "trust-badges",
+          "settings": {
+            "items": [
+              { "title": "Clean ingredients", "description": "Phthalate-free fragrance standards." },
+              { "title": "Fast fulfillment", "description": "Warehouse-ready processing in 24 hours." },
+              { "title": "Support that ships", "description": "Real experts for product and setup questions." }
+            ]
+          },
+          "settings_schema": [
+            { "key": "items", "label": "Badges", "type": "json", "hint": "Array of { title, description }" }
+          ]
+        },
+        {
+          "type": "content-tiles",
+          "settings": {
+            "title": "Learn before you light",
+            "tiles": [
+              {
+                "title": "How to choose a wax",
+                "description": "Quick guide to soy, paraffin, and coconut blends.",
+                "href": "/guides/wax",
+                "ctaLabel": "Read guide"
+              },
+              {
+                "title": "Beginner pouring checklist",
+                "description": "Everything needed for your first production-quality candle.",
+                "href": "/guides/checklist",
+                "ctaLabel": "Open checklist"
+              },
+              {
+                "title": "Fragrance blending basics",
+                "description": "Build balanced top, middle, and base notes.",
+                "href": "/guides/fragrance",
+                "ctaLabel": "Explore blending"
+              }
+            ]
+          },
+          "settings_schema": [
+            { "key": "title", "label": "Title", "type": "text" },
+            { "key": "tiles", "label": "Tiles", "type": "json", "hint": "Array of { title, description, href, ctaLabel }" }
+          ]
+        }
+      ]
+    },
+    "product-list": {
+      "sections": [
+        {
+          "type": "page-hero",
+          "settings": {
+            "title": "All Products",
+            "subtitle": "Discover fragrance-forward products designed for repeat purchases."
+          },
+          "settings_schema": [
+            { "key": "title", "label": "Title", "type": "text" },
+            { "key": "subtitle", "label": "Subtitle", "type": "text" }
+          ]
+        }
+      ]
+    },
+    "product-detail": {
+      "sections": [
+        {
+          "type": "product-detail-layout",
+          "settings": {
+            "quantity_label": "Quantity:",
+            "add_to_cart_label": "Add to Cart",
+            "related_title": "You Might Also Like",
+            "trust_items": [
+              { "title": "Free Shipping", "description": "On orders over $75" },
+              { "title": "Secure Payment", "description": "Protected checkout across devices" },
+              { "title": "Easy Returns", "description": "30-day return guarantee" }
+            ]
+          },
+          "settings_schema": [
+            { "key": "quantity_label", "label": "Quantity Label", "type": "text" },
+            { "key": "add_to_cart_label", "label": "Add To Cart Label", "type": "text" },
+            { "key": "related_title", "label": "Related Products Heading", "type": "text" },
+            { "key": "trust_items", "label": "Trust Items", "type": "json", "hint": "Array of { title, description }" }
+          ]
+        }
+      ]
+    },
+    "cart": {
+      "sections": [
+        {
+          "type": "cart-layout",
+          "settings": {
+            "title": "Shopping Cart",
+            "empty_state_title": "Your cart is empty",
+            "empty_state_cta_label": "Start Shopping",
+            "summary_title": "Order Summary",
+            "checkout_label": "Proceed to Checkout",
+            "signin_checkout_label": "Sign In to Checkout",
+            "continue_shopping_label": "Continue Shopping",
+            "free_shipping_message": "Free shipping on orders over $75!",
+            "free_shipping_threshold": 75
+          },
+          "settings_schema": [
+            { "key": "title", "label": "Page Title", "type": "text" },
+            { "key": "empty_state_title", "label": "Empty State Title", "type": "text" },
+            { "key": "empty_state_cta_label", "label": "Empty State CTA Label", "type": "text" },
+            { "key": "summary_title", "label": "Summary Title", "type": "text" },
+            { "key": "checkout_label", "label": "Checkout Button Label", "type": "text" },
+            { "key": "signin_checkout_label", "label": "Sign-In Checkout Label", "type": "text" },
+            { "key": "continue_shopping_label", "label": "Continue Shopping Label", "type": "text" },
+            { "key": "free_shipping_message", "label": "Free Shipping Message", "type": "text" },
+            { "key": "free_shipping_threshold", "label": "Free Shipping Threshold", "type": "number" }
+          ]
+        }
+      ]
+    },
+    "checkout": {
+      "sections": [
+        {
+          "type": "checkout-layout",
+          "settings": {
+            "title": "Secure Checkout",
+            "steps": ["Shipping", "Payment", "Review"],
+            "summary_title": "Order Summary",
+            "free_shipping_message": "Free shipping on orders over $75!",
+            "free_shipping_threshold": 75
+          },
+          "settings_schema": [
+            { "key": "title", "label": "Title", "type": "text" },
+            { "key": "steps", "label": "Step Labels", "type": "array" },
+            { "key": "summary_title", "label": "Summary Title", "type": "text" },
+            { "key": "free_shipping_message", "label": "Free Shipping Message", "type": "text" },
+            { "key": "free_shipping_threshold", "label": "Free Shipping Threshold", "type": "number" }
+          ]
+        }
+      ]
+    }
+  }
+}

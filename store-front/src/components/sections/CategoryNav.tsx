@@ -29,11 +29,11 @@ export function CategoryNav() {
   }, [storeSlug]);
 
   return (
-    <section className="py-6">
-      <div className="mb-6 flex items-center justify-between">
+    <section className="py-2">
+      <div className="mb-5 flex items-center justify-between">
         <h2 className="label-caps text-secondary">Shop by Category</h2>
         {storeSlug && (
-          <Link href={`/${storeSlug}/products`} className="text-sm font-medium text-foreground hover:text-secondary transition">
+          <Link href={`/${storeSlug}/products`} className="text-sm font-bold text-foreground hover:text-primary transition">
             View All
           </Link>
         )}
@@ -44,12 +44,15 @@ export function CategoryNav() {
       ) : categories.length === 0 ? (
         <p className="text-sm text-secondary">No categories published yet.</p>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+        <div className="flex gap-3 overflow-x-auto pb-2">
+          <Link href={`/${storeSlug}/products`} className="air-pill air-pill-active whitespace-nowrap">
+            All
+          </Link>
           {categories.map((category) => (
             <Link
               key={category.id}
               href={`/${storeSlug}/products?category=${category.id}`}
-              className="group rounded-lg border border-outline-variant/50 bg-surface px-4 py-3 text-center text-sm font-medium text-secondary hover:border-outline hover:bg-surface-container transition"
+              className="air-pill whitespace-nowrap"
             >
               {category.name}
             </Link>

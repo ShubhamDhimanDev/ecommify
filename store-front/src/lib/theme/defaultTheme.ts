@@ -3,23 +3,23 @@ import type { CSSProperties } from "react";
 
 export const defaultTheme: StorefrontTheme = {
   palette: {
-    background: "#fdf8f8",
-    foreground: "#1c1b1b",
+    background: "#faf8f5",
+    foreground: "#3c3c3c",
     surface: "#ffffff",
-    surfaceLow: "#f7f3f2",
-    surfaceVariant: "#e5e2e1",
-    surfaceContainer: "#f1edec",
-    surfaceContainerHigh: "#ebe7e6",
-    primary: "#1c1b1b",
+    surfaceLow: "#faf8f5",
+    surfaceVariant: "#f0ebe5",
+    surfaceContainer: "#ede7df",
+    surfaceContainerHigh: "#e8e1d9",
+    primary: "#a67b4b",
     onPrimary: "#ffffff",
-    secondary: "#585f6c",
-    outline: "#747878",
-    outlineVariant: "#c4c7c7",
-    accent: "#dce2f3",
+    secondary: "#7d6e6e",
+    outline: "#5a5a5a",
+    outlineVariant: "#c9bfb3",
+    accent: "#d4a574",
   },
   typography: {
-    displayFamily: "var(--font-display)",
     bodyFamily: "var(--font-body)",
+    displayFamily: "var(--font-body)",
   },
 };
 
