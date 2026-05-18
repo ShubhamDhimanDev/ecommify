@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import type { SectionComponentProps } from "@/lib/theme/engine/types";
 
 type ProductGridItem = {
@@ -56,11 +55,9 @@ export function ProductGridSection({ settings, context }: SectionComponentProps<
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {products.map((product, index) => (
               <article key={product.id ?? `${product.title ?? "product"}-${index}`} className="air-card overflow-hidden rounded-3xl">
-                <Image
+                <img
                   src={product.image || FALLBACK_IMAGE}
                   alt={product.title || "Product image"}
-                  width={900}
-                  height={900}
                   className="h-64 w-full object-cover"
                 />
                 <div className="space-y-2 p-5">

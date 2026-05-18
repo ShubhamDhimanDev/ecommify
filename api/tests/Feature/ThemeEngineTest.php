@@ -126,6 +126,43 @@ it('rejects invalid theme override keys', function (): void {
     ])->assertStatus(422);
 });
 
+it('accepts dynamic menu item overrides in header settings', function (): void {
+    Sanctum::actingAs($this->user);
+
+    $this->postJson('/api/v1/store/acme-store/themes/'.$this->theme->id.'/activate')->assertOk();
+
+    $this->putJson('/api/v1/store/acme-store/theme/config', [
+        'custom_config' => [
+            'pages' => [
+                'header' => [
+                    'sections' => [
+                        [
+                            'type' => 'mega-menu',
+                            'settings' => [
+                                'dynamic_menu_items' => [
+                                    [
+                                        'label' => 'Candle Making',
+                                        'href' => '/products?category=candle-making',
+                                        'children' => [
+                                            [
+                                                'label' => 'Wax',
+                                                'href' => '/products?category=wax',
+                                            ],
+                                        ],
+                                        'promos' => [],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ])
+        ->assertOk()
+        ->assertJsonPath('data.config.pages.header.sections.0.settings.dynamic_menu_items.0.label', 'Candle Making');
+});
+
 it('switches active themes without violating one-active-per-store constraint', function (): void {
     Sanctum::actingAs($this->user);
 

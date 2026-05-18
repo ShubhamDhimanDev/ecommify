@@ -46,6 +46,7 @@ export function Sidebar() {
     { href: `${base}/payments`,   label: "Payments",   icon: CreditCard },
     { href: `${base}/tags`,       label: "Tags",       icon: Tags },
     { href: `${base}/themes`,     label: "Themes",     icon: Palette },
+    { href: `${base}/themes/menu`, label: "Theme Menu", icon: Palette },
     { href: `${base}/settings`,   label: "Settings",   icon: Settings },
   ];
 

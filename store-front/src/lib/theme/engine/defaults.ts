@@ -2,14 +2,6 @@ import type { ThemeConfig, ThemePageConfig, ThemeSection } from "@/lib/theme/eng
 
 const DEFAULT_HOME_SECTIONS: ThemeSection[] = [
   {
-    type: "announcement-bar",
-    settings: {
-      text: "Premium wax & fragrance. Pure craftsmanship. Free shipping on orders over $75.",
-      linkLabel: "Shop now",
-      linkHref: "/products",
-    },
-  },
-  {
     type: "hero",
     settings: {
       eyebrow: "Handcrafted Candles",

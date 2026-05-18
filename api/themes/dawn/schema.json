@@ -11,6 +11,7 @@
                             { "label": "Shop All", "href": "/products" },
                             { "label": "New Arrivals", "href": "/products?sort=newest" }
                         ],
+                        "dynamic_menu_items": [],
                         "mega_groups": [
                             {
                                 "title": "Shop by Use",
@@ -31,6 +32,7 @@
                     "settings_schema": [
                         { "key": "announcement_text", "label": "Announcement Text", "type": "text" },
                         { "key": "menu_items", "label": "Primary Menu Items", "type": "json", "hint": "Array of { label, href }" },
+                        { "key": "dynamic_menu_items", "label": "Dynamic Menu Items", "type": "json", "hint": "Array of { label, href, children[], promos[] }" },
                         { "key": "mega_groups", "label": "Mega Menu Groups", "type": "json", "hint": "Array of { title, links[] }" }
                     ]
                 }

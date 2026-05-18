@@ -10,6 +10,7 @@ use App\Models\Theme;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use RuntimeException;
 
@@ -120,7 +121,21 @@ class ThemeService
             'custom_config' => $customConfig,
         ])->save();
 
+        $cacheKey = $this->cacheKey($tenant->id);
+
         $this->forgetCachedTheme($tenant->id);
+        Log::info('Theme override cache invalidated.', [
+            'tenant_id' => $tenant->id,
+            'tenant_slug' => $tenant->slug,
+            'cache_key' => $cacheKey,
+        ]);
+
+        $this->getActiveThemePayload($tenant);
+        Log::info('Theme override cache warmed.', [
+            'tenant_id' => $tenant->id,
+            'tenant_slug' => $tenant->slug,
+            'cache_key' => $cacheKey,
+        ]);
 
         return $storeTheme;
     }
@@ -205,6 +220,26 @@ class ThemeService
             }
 
             return;
+        }
+
+        if ($this->isListArray($schemaNode)) {
+            // Empty schema list means the node is intentionally free-form JSON.
+            if ($schemaNode === []) {
+                return;
+            }
+
+            // Single-item schema list acts as a template for all override items.
+            if (count($schemaNode) === 1) {
+                foreach ($overrideNode as $index => $value) {
+                    if (is_array($value) && isset($value['type']) && is_string($value['type']) && ! in_array($value['type'], $allowedSectionTypes, true)) {
+                        throw new InvalidArgumentException("Section type [{$value['type']}] does not exist in the theme schema.");
+                    }
+
+                    $this->assertOverrideSubset($schemaNode[0], $value, $this->joinPath($path, (string) $index), $allowedSectionTypes);
+                }
+
+                return;
+            }
         }
 
         foreach ($overrideNode as $index => $value) {

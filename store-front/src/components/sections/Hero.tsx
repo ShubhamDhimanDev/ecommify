@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { MoveRight, ShieldCheck, Truck, Undo2 } from "lucide-react";
 import type { SectionComponentProps } from "@/lib/theme/engine/types";
 
@@ -64,11 +63,9 @@ export function HeroSection({ settings, context }: SectionComponentProps<HeroSet
             </div>
 
             <div className="air-card hidden overflow-hidden rounded-[30px] md:block">
-              <Image
+              <img
                 src={resolvedSettings.heroImage || "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=900&h=900&fit=crop"}
                 alt={resolvedSettings.title}
-                width={900}
-                height={900}
                 className="h-[420px] w-full object-cover"
               />
             </div>

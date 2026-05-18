@@ -56,7 +56,7 @@ export default async function StoreHomePage({ params, searchParams }: StoreHomeP
     <>
       <DynamicSectionRenderer
         sections={homePage.sections}
-        className="flex flex-col gap-14 py-4"
+        className="flex flex-col gap-14"
         context={{
           storeSlug,
           tenantDomain: themePayload.tenant.domain,

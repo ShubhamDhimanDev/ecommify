@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef, type ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useStore } from "@/context/StoreContext";
@@ -9,6 +9,8 @@ import { useCart } from "@/context/CartContext";
 import { categoryApi, themeApi } from "@/lib/api/client";
 import type { Category } from "@/lib/types/product";
 import { Menu, Search, ShoppingBag, UserRound, X, Globe, ArrowRight } from "lucide-react";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 type ThemeMenuLink = {
   label: string;
@@ -20,10 +22,30 @@ type ThemeMegaGroup = {
   links: ThemeMenuLink[];
 };
 
+type ThemePromoCard = {
+  title: string;
+  image?: string;
+  href?: string;
+};
+
+type ThemeMenuNode = {
+  label: string;
+  href: string;
+  children: ThemeMenuNode[];
+};
+
+type ThemeDynamicMenuItem = {
+  label: string;
+  href: string;
+  children: ThemeMenuNode[];
+  promos: ThemePromoCard[];
+};
+
 type ThemeHeaderSettings = {
   announcementText?: string;
   menuItems?: ThemeMenuLink[];
   megaGroups?: ThemeMegaGroup[];
+  dynamicMenuItems?: ThemeDynamicMenuItem[];
 };
 
 function normalizeMenuLinks(value: unknown): ThemeMenuLink[] {
@@ -39,6 +61,20 @@ function normalizeMenuLinks(value: unknown): ThemeMenuLink[] {
     }));
 }
 
+function normalizeMenuNodes(value: unknown): ThemeMenuNode[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((entry): entry is { label?: unknown; href?: unknown; children?: unknown } => Boolean(entry) && typeof entry === "object")
+    .map((entry) => ({
+      label: typeof entry.label === "string" && entry.label.trim() ? entry.label : "Link",
+      href: typeof entry.href === "string" ? entry.href : "",
+      children: normalizeMenuNodes(entry.children),
+    }));
+}
+
 function normalizeMegaGroups(value: unknown): ThemeMegaGroup[] {
   if (!Array.isArray(value)) {
     return [];
@@ -51,6 +87,54 @@ function normalizeMegaGroups(value: unknown): ThemeMegaGroup[] {
       links: normalizeMenuLinks(entry.links),
     }))
     .filter((group) => group.links.length > 0);
+}
+
+function normalizePromoCards(value: unknown): ThemePromoCard[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((entry): entry is { title?: unknown; image?: unknown; image_url?: unknown; href?: unknown } => Boolean(entry) && typeof entry === "object")
+    .map((entry) => ({
+      title: typeof entry.title === "string" && entry.title.trim() ? entry.title : "Featured",
+      image:
+        typeof entry.image === "string"
+          ? entry.image
+          : (typeof entry.image_url === "string" ? entry.image_url : undefined),
+      href: typeof entry.href === "string" ? entry.href : undefined,
+    }));
+}
+
+function resolvePromoImageSrc(image: string): string {
+  if (!image) {
+    return "";
+  }
+
+  if (/^(https?:)?\/\//i.test(image) || image.startsWith("data:") || image.startsWith("blob:")) {
+    return image;
+  }
+
+  if (image.startsWith("/")) {
+    return `${API_BASE}${image}`;
+  }
+
+  return `${API_BASE}/${image}`;
+}
+
+function normalizeDynamicMenuItems(value: unknown): ThemeDynamicMenuItem[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((entry): entry is { label?: unknown; href?: unknown; children?: unknown; promos?: unknown } => Boolean(entry) && typeof entry === "object")
+    .map((entry) => ({
+      label: typeof entry.label === "string" && entry.label.trim() ? entry.label : "Menu",
+      href: typeof entry.href === "string" ? entry.href : "",
+      children: normalizeMenuNodes(entry.children),
+      promos: normalizePromoCards(entry.promos),
+    }));
 }
 
 function resolveThemedPath(storeSlug: string, href: string): string {
@@ -98,6 +182,7 @@ function extractHeaderSettings(payload: unknown): ThemeHeaderSettings | null {
       typeof settings.announcement_text === "string" ? settings.announcement_text : undefined,
     menuItems: normalizeMenuLinks(settings.menu_items),
     megaGroups: normalizeMegaGroups(settings.mega_groups),
+    dynamicMenuItems: normalizeDynamicMenuItems(settings.dynamic_menu_items),
   };
 }
 
@@ -114,6 +199,7 @@ export function Header({ storeSlug }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [themeHeader, setThemeHeader] = useState<ThemeHeaderSettings | null>(null);
+  const [activeDesktopMega, setActiveDesktopMega] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -145,7 +231,7 @@ export function Header({ storeSlug }: HeaderProps) {
         }).catch(() => null),
       ]);
 
-      setCategories(data);
+      setCategories(Array.isArray(data) ? data : []);
 
       if (storeTheme) {
         setThemeHeader(extractHeaderSettings(storeTheme));
@@ -162,16 +248,93 @@ export function Header({ storeSlug }: HeaderProps) {
     }
   }, [storeSlug, loadCategories]);
 
-  const themedMenuItems = themeHeader?.menuItems?.length ? themeHeader.menuItems : null;
-  const announcementText = themeHeader?.announcementText || "Book-worthy finds. Free shipping over $150.";
-  const megaGroups = themeHeader?.megaGroups ?? [];
+  const topLevelCategories = useMemo(
+    () => categories.filter((category) => !category.parent_id || category.depth === 0),
+    [categories]
+  );
+
+  const fallbackDynamicMenu = useMemo<ThemeDynamicMenuItem[]>(() => {
+    const buildCategoryNodes = (parentId: string, depth: number): ThemeMenuNode[] => {
+      const limit = depth === 0 ? 12 : 8;
+
+      return categories
+        .filter((candidate) => candidate.parent_id === parentId)
+        .slice(0, limit)
+        .map((child) => ({
+          label: child.name,
+          href: `/${storeSlug}/products?category=${encodeURIComponent(child.slug)}`,
+          children: depth < 2 ? buildCategoryNodes(child.id, depth + 1) : [],
+        }));
+    };
+
+    return topLevelCategories.slice(0, 9).map((category) => {
+      const children = buildCategoryNodes(category.id, 0);
+
+      return {
+        label: category.name,
+        href: `/${storeSlug}/products?category=${encodeURIComponent(category.slug)}`,
+        children,
+        promos: [],
+      };
+    });
+  }, [categories, storeSlug, topLevelCategories]);
+
+  const desktopDynamicMenu = themeHeader?.dynamicMenuItems?.length
+    ? themeHeader.dynamicMenuItems
+    : fallbackDynamicMenu;
+
+  const desktopLinks = desktopDynamicMenu.length > 0
+    ? desktopDynamicMenu.map((item) => ({ label: item.label, href: item.href }))
+    : (themeHeader?.menuItems?.length
+      ? themeHeader.menuItems
+      : [
+          { label: "Home", href: `/${storeSlug}` },
+          { label: "Shop All", href: `/${storeSlug}/products` },
+        ]);
+
+  const activeMenuItem = desktopDynamicMenu.find((item) => item.label === activeDesktopMega) ?? null;
+  const activeMenuHasMega = Boolean(activeMenuItem && (activeMenuItem.children.length > 0 || activeMenuItem.promos.length > 0));
+  const activeMenuHasChildren = Boolean(activeMenuItem && activeMenuItem.children.length > 0);
+
+  function renderGroupedChildren(nodes: ThemeMenuNode[]): ReactNode {
+    if (nodes.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="mt-3 space-y-3">
+        {nodes.map((node, index) => (
+          <div key={`${node.label}-${node.href}-${index}`} className="space-y-1.5">
+            <Link
+              href={resolveThemedPath(storeSlug, node.href)}
+              className="text-sm font-semibold text-foreground/90 transition hover:text-foreground hover:underline hover:underline-offset-4"
+              onClick={() => setActiveDesktopMega(null)}
+            >
+              {node.label}
+            </Link>
+
+            {node.children.length > 0 && (
+              <div className="flex flex-col gap-1 pl-1">
+                {node.children.map((leaf, leafIndex) => (
+                  <Link
+                    key={`${leaf.label}-${leaf.href}-${leafIndex}`}
+                    href={resolveThemedPath(storeSlug, leaf.href)}
+                    className="text-[13px] font-medium text-secondary transition hover:text-foreground hover:underline hover:underline-offset-4"
+                    onClick={() => setActiveDesktopMega(null)}
+                  >
+                    {leaf.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-outline-variant/60 bg-surface/90 backdrop-blur-xl">
-      <div className="hidden border-b border-outline-variant/50 bg-surface-container px-4 py-2 text-xs font-semibold text-secondary sm:block">
-        <div className="mx-auto max-w-7xl text-center">{announcementText}</div>
-      </div>
-
+    <header className="sticky top-0 z-50 bg-surface/95 backdrop-blur-xl">
       <nav className="px-4 py-4 sm:py-5">
         <div className="mx-auto max-w-7xl">
           <div className="flex items-center justify-between gap-4">
@@ -297,72 +460,102 @@ export function Header({ storeSlug }: HeaderProps) {
             </form>
           )}
 
-          <div className="mt-4 hidden items-center gap-3 overflow-x-auto pb-1 md:flex">
-            {themedMenuItems ? (
-              themedMenuItems.map((item, index) => (
-                <Link key={`${item.label}-${index}`} href={resolveThemedPath(storeSlug, item.href)} className="air-pill whitespace-nowrap">
-                  {item.label}
-                </Link>
-              ))
-            ) : (
-              <>
-                <Link href={`/${storeSlug}`} className="air-pill whitespace-nowrap">
-                  Home
-                </Link>
-                <Link href={`/${storeSlug}/products`} className="air-pill whitespace-nowrap">
-                  Shop All
-                </Link>
-                {categories.slice(0, 4).map((cat) => (
-                  <Link
-                    key={cat.id}
-                    href={`/${storeSlug}/products?category=${cat.id}`}
-                    className="air-pill whitespace-nowrap"
-                  >
-                    {cat.name}
-                  </Link>
-                ))}
-              </>
-            )}
+          <div
+            className="relative mt-4 hidden md:block"
+            onMouseLeave={() => setActiveDesktopMega(null)}
+          >
+            <div className="flex items-center gap-8 overflow-x-auto pb-1">
+              {desktopLinks.map((item, index) => {
+                const dynamicItem = desktopDynamicMenu.find((candidate) => candidate.label === item.label);
+                const menuHasMega = Boolean(dynamicItem && (dynamicItem.children.length > 0 || dynamicItem.promos.length > 0));
+                const isActive = activeDesktopMega === item.label;
 
-            {megaGroups.length > 0 ? (
-              <div className="group relative">
-                <button className="air-pill">More</button>
-                <div className="absolute left-0 top-full hidden pt-2 group-hover:block">
-                  <div className="air-card min-w-56 space-y-3 rounded-2xl p-3">
-                    {megaGroups.map((group) => (
-                      <div key={group.title}>
-                        <p className="mb-1 px-2 text-xs font-bold uppercase tracking-wide text-secondary">{group.title}</p>
-                        <div className="space-y-1">
-                          {group.links.map((link, index) => (
+                if (menuHasMega) {
+                  return (
+                    <button
+                      key={`${item.label}-${index}`}
+                      type="button"
+                      onMouseEnter={() => setActiveDesktopMega(item.label)}
+                      onFocus={() => setActiveDesktopMega(item.label)}
+                      className={`whitespace-nowrap pb-2 text-[17px] font-semibold transition ${
+                        isActive
+                          ? "text-primary"
+                          : "text-foreground hover:text-primary"
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={`${item.label}-${index}`}
+                    href={resolveThemedPath(storeSlug, item.href)}
+                    className="whitespace-nowrap pb-2 text-[17px] font-semibold text-foreground transition hover:text-primary"
+                    onMouseEnter={() => setActiveDesktopMega(null)}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+
+            {activeMenuHasMega && activeMenuItem && (
+              <div className="absolute left-1/2 top-full z-50 w-screen -translate-x-1/2">
+                <div className="bg-surface/95 px-6 py-6 backdrop-blur-xl">
+                  <div
+                    className={`mx-auto grid max-w-7xl gap-8 ${
+                      activeMenuItem.promos.length > 0 && activeMenuHasChildren
+                        ? "lg:grid-cols-[1.8fr_1fr]"
+                        : "lg:grid-cols-1"
+                    }`}
+                  >
+                  {activeMenuHasChildren && (
+                    <div>
+                      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
+                        {activeMenuItem.children.map((node, index) => (
+                          <div key={`${activeMenuItem.label}-${node.label}-${index}`} className="min-w-0">
                             <Link
-                              key={`${group.title}-${link.label}-${index}`}
-                              href={resolveThemedPath(storeSlug, link.href)}
-                              className="block rounded-xl px-3 py-2 text-sm font-semibold text-secondary transition hover:bg-surface-container hover:text-foreground"
+                              href={resolveThemedPath(storeSlug, node.href)}
+                              className="text-[18px] font-semibold text-foreground transition hover:underline hover:underline-offset-4"
+                              onClick={() => setActiveDesktopMega(null)}
                             >
-                              {link.label}
+                              {node.label}
                             </Link>
-                          ))}
-                        </div>
+                            {renderGroupedChildren(node.children)}
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
+
+                  {activeMenuItem.promos.length > 0 && (
+                    <div className={`grid gap-3 sm:grid-cols-2 ${activeMenuHasChildren ? "lg:grid-cols-1" : "lg:grid-cols-3"}`}>
+                      {activeMenuItem.promos.map((promo, index) => {
+                        const href = promo.href ? resolveThemedPath(storeSlug, promo.href) : `/${storeSlug}`;
+
+                        return (
+                          <Link
+                            key={`${promo.title}-${index}`}
+                            href={href}
+                            className="group overflow-hidden rounded-2xl bg-surface-container"
+                            onClick={() => setActiveDesktopMega(null)}
+                          >
+                            {promo.image ? (
+                              <img
+                                src={resolvePromoImageSrc(promo.image)}
+                                alt={promo.title}
+                                className="h-32 w-full object-cover transition duration-300 group-hover:scale-105"
+                              />
+                            ) : null}
+                            <p className="px-4 py-3 text-sm font-semibold text-foreground">{promo.title}</p>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ) : categories.length > 4 && (
-              <div className="group relative">
-                <button className="air-pill">More</button>
-                <div className="absolute left-0 top-full hidden pt-2 group-hover:block">
-                  <div className="air-card min-w-40 rounded-2xl p-1">
-                    {categories.slice(4).map((cat) => (
-                      <Link
-                        key={cat.id}
-                        href={`/${storeSlug}/products?category=${cat.id}`}
-                        className="block rounded-xl px-4 py-2 text-sm font-semibold text-secondary transition hover:bg-surface-container hover:text-foreground"
-                      >
-                        {cat.name}
-                      </Link>
-                    ))}
-                  </div>
                 </div>
               </div>
             )}
@@ -370,39 +563,23 @@ export function Header({ storeSlug }: HeaderProps) {
 
           {mobileMenuOpen && (
             <div className="air-card mt-5 flex flex-col gap-3 rounded-3xl p-5 md:hidden">
-              {themedMenuItems ? (
-                themedMenuItems.map((item, index) => (
-                  <Link
-                    key={`${item.label}-${index}`}
-                    href={resolveThemedPath(storeSlug, item.href)}
-                    className="air-pill"
-                  >
-                    {item.label}
-                  </Link>
-                ))
-              ) : (
-                <>
-                  <Link
-                    href={`/${storeSlug}`}
-                    className="air-pill"
-                  >
-                    Home
-                  </Link>
-                  <Link
-                    href={`/${storeSlug}/products`}
-                    className="air-pill"
-                  >
-                    Shop All
-                  </Link>
-                </>
-              )}
-              {categories.map((cat) => (
+              {desktopLinks.map((item, index) => (
                 <Link
-                  key={cat.id}
-                  href={`/${storeSlug}/products?category=${cat.id}`}
+                  key={`${item.label}-${index}`}
+                  href={resolveThemedPath(storeSlug, item.href)}
                   className="air-pill"
                 >
-                  {cat.name}
+                  {item.label}
+                </Link>
+              ))}
+
+              {activeMenuItem?.children.map((item, index) => (
+                <Link
+                  key={`${item.label}-${index}`}
+                  href={resolveThemedPath(storeSlug, item.href)}
+                  className="rounded-xl border border-outline-variant/30 px-4 py-2 text-sm font-semibold text-secondary"
+                >
+                  {item.label}
                 </Link>
               ))}
 

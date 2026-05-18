@@ -82,6 +82,36 @@ type ProductEnvelope = { product: Product };
 type ProductListEnvelope = { data: Product[] };
 type ThemeEnvelope = { data: StoreThemePayload };
 
+function normalizeCategoryList(payload: unknown): Category[] {
+  if (Array.isArray(payload)) {
+    return payload as Category[];
+  }
+
+  if (!payload || typeof payload !== "object") {
+    return [];
+  }
+
+  if ("categories" in payload) {
+    const categories = (payload as { categories?: unknown }).categories;
+
+    if (Array.isArray(categories)) {
+      return categories as Category[];
+    }
+
+    if (categories && typeof categories === "object" && "data" in categories) {
+      const wrappedData = (categories as { data?: unknown }).data;
+      return Array.isArray(wrappedData) ? (wrappedData as Category[]) : [];
+    }
+  }
+
+  if ("data" in payload) {
+    const data = (payload as { data?: unknown }).data;
+    return Array.isArray(data) ? (data as Category[]) : [];
+  }
+
+  return [];
+}
+
 function normalizeStore(payload: Store | StoreEnvelope): Store {
   if (payload && typeof payload === "object" && "store" in payload) {
     return (payload as StoreEnvelope).store;
@@ -204,8 +234,8 @@ export const productApi = {
 // Category API (public)
 export const categoryApi = {
   list: async (slug: string): Promise<Category[]> => {
-    const payload = await apiGet<CategoryEnvelope>(`/api/pub/v1/stores/${slug}/categories`);
-    return payload.categories ?? [];
+    const payload = await apiGet<CategoryEnvelope | Category[] | { data?: Category[] }>(`/api/pub/v1/stores/${slug}/categories`);
+    return normalizeCategoryList(payload);
   },
 };
 
