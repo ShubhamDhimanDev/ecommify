@@ -12,6 +12,7 @@ import {
   CreditCard,
   Tags,
   Settings,
+  Palette,
   Plus,
   Shield,
   User,
@@ -44,6 +45,7 @@ export function Sidebar() {
     { href: `${base}/customers`,  label: "Customers",  icon: Users },
     { href: `${base}/payments`,   label: "Payments",   icon: CreditCard },
     { href: `${base}/tags`,       label: "Tags",       icon: Tags },
+    { href: `${base}/themes`,     label: "Themes",     icon: Palette },
     { href: `${base}/settings`,   label: "Settings",   icon: Settings },
   ];
 

@@ -1,89 +1,76 @@
-"use client";
+import type { Metadata } from "next";
+import { DynamicSectionRenderer } from "@/components/theme/DynamicSectionRenderer";
+import { loadStoreTheme } from "@/lib/theme/engine/loader";
 
-import { HeroSection } from "@/components/sections/Hero";
-import { FeaturedProducts } from "@/components/sections/FeaturedProducts";
-import { CategoryNav } from "@/components/sections/CategoryNav";
-import { ShieldCheck, Sparkles, Truck, Users } from "lucide-react";
+type StoreHomePageProps = {
+  params: Promise<{ storeSlug: string }>;
+  searchParams: Promise<{ preview_theme?: string; preview_page?: string }>;
+};
 
-export default function StoreHomePage() {
+function toStructuredData(value: unknown): Array<Record<string, unknown>> {
+  if (Array.isArray(value)) {
+    return value.filter((entry): entry is Record<string, unknown> => Boolean(entry) && typeof entry === "object");
+  }
+
+  if (value && typeof value === "object") {
+    return [value as Record<string, unknown>];
+  }
+
+  return [];
+}
+
+export async function generateMetadata({ params, searchParams }: StoreHomePageProps): Promise<Metadata> {
+  const { storeSlug } = await params;
+  const query = await searchParams;
+  const themePayload = await loadStoreTheme({
+    storeSlug,
+    previewTheme: query.preview_theme,
+    previewPage: query.preview_page,
+  });
+  const homePage = themePayload.config.pages.home;
+
+  return {
+    title: homePage.seo?.title ?? themePayload.tenant.name ?? "Storefront",
+    description: homePage.seo?.description ?? themePayload.tenant.description ?? "Tenant storefront",
+    robots: homePage.seo?.robots,
+    alternates: homePage.seo?.canonical
+      ? {
+          canonical: homePage.seo.canonical,
+        }
+      : undefined,
+  };
+}
+
+export default async function StoreHomePage({ params, searchParams }: StoreHomePageProps) {
+  const { storeSlug } = await params;
+  const query = await searchParams;
+  const themePayload = await loadStoreTheme({
+    storeSlug,
+    previewTheme: query.preview_theme,
+    previewPage: query.preview_page,
+  });
+  const homePage = themePayload.config.pages.home;
+  const structuredData = toStructuredData(homePage.structuredData ?? homePage.structured_data);
+
   return (
     <>
-      {/* Hero Section */}
-      <HeroSection />
+      <DynamicSectionRenderer
+        sections={homePage.sections}
+        className="flex flex-col gap-14 py-4"
+        context={{
+          storeSlug,
+          tenantDomain: themePayload.tenant.domain,
+          themeCode: themePayload.theme_code,
+        }}
+      />
 
-      {/* Main Content */}
-      <div className="flex flex-col gap-20">
-        {/* Category Navigation */}
-        <section className="px-4">
-          <div className="mx-auto max-w-7xl">
-            <CategoryNav />
-          </div>
-        </section>
-
-        {/* Featured Products */}
-        <section className="px-4">
-          <div className="mx-auto max-w-7xl">
-            <FeaturedProducts />
-          </div>
-        </section>
-
-        {/* Why Trust Us Section */}
-        <section className="px-4 py-12">
-          <div className="mx-auto max-w-7xl">
-            <h2 className="headline-md text-foreground mb-12 text-center">Why Customers Choose Us</h2>
-            <div className="grid gap-8 md:grid-cols-3">
-              {[
-                {
-                  icon: Sparkles,
-                  title: "Curated Selection",
-                  description: "Carefully selected products from trusted vendors.",
-                },
-                {
-                  icon: Truck,
-                  title: "Fast & Reliable",
-                  description: "Quick processing and dependable shipping to your door.",
-                },
-                {
-                  icon: ShieldCheck,
-                  title: "Secure & Safe",
-                  description: "Protected transactions with 100% buyer protection.",
-                },
-              ].map((feature, i) => (
-                <div key={i} className="flex flex-col items-center text-center">
-                  <div className="mb-4 rounded-lg bg-primary/10 p-4">
-                    <feature.icon className="h-8 w-8 text-primary" />
-                  </div>
-                  <h3 className="mb-2 font-semibold text-foreground">{feature.title}</h3>
-                  <p className="text-sm text-secondary">{feature.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Community Stats */}
-        <section className="border-t border-outline-variant/30 px-4 py-12">
-          <div className="mx-auto max-w-7xl">
-            <div className="rounded-lg border border-outline-variant/30 bg-surface-container px-8 py-12 text-center">
-              <p className="label-caps text-secondary mb-4">Join Our Community</p>
-              <h2 className="headline-md text-foreground mb-8">
-                Thousands of Customers Shopping Daily
-              </h2>
-              <div className="inline-flex items-center gap-8 md:gap-16">
-                <div>
-                  <p className="display-lg-mobile text-foreground">10k+</p>
-                  <p className="text-sm text-secondary">Happy Shoppers</p>
-                </div>
-                <div className="h-12 w-px bg-outline-variant/30" />
-                <div>
-                  <p className="display-lg-mobile text-foreground">50k+</p>
-                  <p className="text-sm text-secondary">Products Available</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
+      {structuredData.map((entry, index) => (
+        <script
+          key={`jsonld-${index}`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(entry) }}
+        />
+      ))}
     </>
   );
 }

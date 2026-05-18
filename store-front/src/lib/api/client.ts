@@ -1,5 +1,8 @@
 import type { Category, Product } from "@/lib/types/product";
 import type { Store } from "@/lib/types/store";
+import type { StoreThemePayload } from "@/lib/theme/engine/types";
+import { DEFAULT_THEME_CODE, DEFAULT_THEME_CONFIG } from "@/lib/theme/engine/defaults";
+import { isThemeSupportEnabled } from "@/lib/theme/engine/support";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -77,6 +80,7 @@ type StoreEnvelope = { store: Store };
 type CategoryEnvelope = { categories: Category[] };
 type ProductEnvelope = { product: Product };
 type ProductListEnvelope = { data: Product[] };
+type ThemeEnvelope = { data: StoreThemePayload };
 
 function normalizeStore(payload: Store | StoreEnvelope): Store {
   if (payload && typeof payload === "object" && "store" in payload) {
@@ -129,6 +133,45 @@ export const storeApi = {
   getBySlug: async (slug: string): Promise<Store> => {
     const payload = await apiGet<StoreEnvelope | Store>(`/api/pub/v1/stores/${slug}`);
     return normalizeStore(payload);
+  },
+};
+
+export const themeApi = {
+  getByStoreSlug: async (
+    slug: string,
+    preview?: { theme?: string | null; page?: string | null }
+  ): Promise<StoreThemePayload> => {
+    if (!isThemeSupportEnabled()) {
+      return {
+        theme_code: DEFAULT_THEME_CODE,
+        config: DEFAULT_THEME_CONFIG,
+        tenant: {
+          slug,
+        },
+        sourceEndpoint: "theme-support-disabled",
+      };
+    }
+
+    const query = new URLSearchParams();
+
+    if (preview?.theme) {
+      query.set("preview_theme", preview.theme);
+    }
+
+    if (preview?.page) {
+      query.set("preview_page", preview.page);
+    }
+
+    const queryString = query.toString();
+    const path = `/api/pub/v1/stores/${slug}/theme${queryString ? `?${queryString}` : ""}`;
+
+    const payload = await apiGet<ThemeEnvelope | StoreThemePayload>(path);
+
+    if (payload && typeof payload === "object" && "data" in payload) {
+      return (payload as ThemeEnvelope).data;
+    }
+
+    return payload as StoreThemePayload;
   },
 };
 

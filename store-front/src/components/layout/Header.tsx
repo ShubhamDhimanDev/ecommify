@@ -1,12 +1,105 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useStore } from "@/context/StoreContext";
 import { useAuth } from "@/context/AuthContext";
-import { categoryApi } from "@/lib/api/client";
+import { useCart } from "@/context/CartContext";
+import { categoryApi, themeApi } from "@/lib/api/client";
 import type { Category } from "@/lib/types/product";
-import { Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
+import { Menu, Search, ShoppingBag, UserRound, X, Globe, ArrowRight } from "lucide-react";
+
+type ThemeMenuLink = {
+  label: string;
+  href: string;
+};
+
+type ThemeMegaGroup = {
+  title: string;
+  links: ThemeMenuLink[];
+};
+
+type ThemeHeaderSettings = {
+  announcementText?: string;
+  menuItems?: ThemeMenuLink[];
+  megaGroups?: ThemeMegaGroup[];
+};
+
+function normalizeMenuLinks(value: unknown): ThemeMenuLink[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((entry): entry is { label?: unknown; href?: unknown } => Boolean(entry) && typeof entry === "object")
+    .map((entry) => ({
+      label: typeof entry.label === "string" && entry.label.trim() ? entry.label : "Link",
+      href: typeof entry.href === "string" ? entry.href : "",
+    }));
+}
+
+function normalizeMegaGroups(value: unknown): ThemeMegaGroup[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((entry): entry is { title?: unknown; links?: unknown } => Boolean(entry) && typeof entry === "object")
+    .map((entry) => ({
+      title: typeof entry.title === "string" && entry.title.trim() ? entry.title : "Menu",
+      links: normalizeMenuLinks(entry.links),
+    }))
+    .filter((group) => group.links.length > 0);
+}
+
+function resolveThemedPath(storeSlug: string, href: string): string {
+  if (!href || href === "/") {
+    return `/${storeSlug}`;
+  }
+
+  if (/^https?:\/\//i.test(href)) {
+    return href;
+  }
+
+  if (href.startsWith(`/${storeSlug}`)) {
+    return href;
+  }
+
+  return `/${storeSlug}${href.startsWith("/") ? href : `/${href}`}`;
+}
+
+function extractHeaderSettings(payload: unknown): ThemeHeaderSettings | null {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  const root = (payload as { data?: unknown }).data ?? payload;
+  if (!root || typeof root !== "object") {
+    return null;
+  }
+
+  const config = (root as { config?: { pages?: Record<string, { sections?: Array<{ type?: string; settings?: Record<string, unknown> }> }> } }).config;
+  const headerSections = config?.pages?.header?.sections;
+
+  if (!Array.isArray(headerSections)) {
+    return null;
+  }
+
+  const megaMenu = headerSections.find((section) => section?.type === "mega-menu");
+  const settings = megaMenu?.settings;
+
+  if (!settings || typeof settings !== "object") {
+    return null;
+  }
+
+  return {
+    announcementText:
+      typeof settings.announcement_text === "string" ? settings.announcement_text : undefined,
+    menuItems: normalizeMenuLinks(settings.menu_items),
+    megaGroups: normalizeMegaGroups(settings.mega_groups),
+  };
+}
 
 interface HeaderProps {
   storeSlug: string;
@@ -14,103 +107,257 @@ interface HeaderProps {
 
 export function Header({ storeSlug }: HeaderProps) {
   const { store } = useStore();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, customer } = useAuth();
+  const { items } = useCart();
   const [categories, setCategories] = useState<Category[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [themeHeader, setThemeHeader] = useState<ThemeHeaderSettings | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const previewTheme = searchParams.get("preview_theme");
+  const previewPage = searchParams.get("preview_page");
 
-  useEffect(() => {
-    if (storeSlug) {
-      loadCategories();
-    }
-  }, [storeSlug]);
+  const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  async function loadCategories() {
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    if (!q) return;
+    router.push(`/${storeSlug}/products?search=${encodeURIComponent(q)}`);
+    setMobileSearchOpen(false);
+  }
+
+  function openMobileSearch() {
+    setMobileSearchOpen(true);
+    setTimeout(() => searchInputRef.current?.focus(), 50);
+  }
+
+  const loadCategories = useCallback(async () => {
     try {
-      const data = await categoryApi.list(storeSlug);
+      const [data, storeTheme] = await Promise.all([
+        categoryApi.list(storeSlug),
+        themeApi.getByStoreSlug(storeSlug, {
+          theme: previewTheme,
+          page: previewPage,
+        }).catch(() => null),
+      ]);
+
       setCategories(data);
+
+      if (storeTheme) {
+        setThemeHeader(extractHeaderSettings(storeTheme));
+      }
     } catch (error) {
       console.error("Failed to load categories:", error);
     }
-  }
+  }, [previewPage, previewTheme, storeSlug]);
+
+  useEffect(() => {
+    if (storeSlug) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      void loadCategories();
+    }
+  }, [storeSlug, loadCategories]);
+
+  const themedMenuItems = themeHeader?.menuItems?.length ? themeHeader.menuItems : null;
+  const announcementText = themeHeader?.announcementText || "Book-worthy finds. Free shipping over $150.";
+  const megaGroups = themeHeader?.megaGroups ?? [];
 
   return (
-    <header className="sticky top-0 z-50 bg-surface">
-      <div className="hidden border-b border-outline-variant/30 bg-surface-container px-4 py-2 text-xs text-secondary sm:block">
-        <div className="mx-auto max-w-7xl text-center">Free shipping on orders over $150</div>
+    <header className="sticky top-0 z-50 border-b border-outline-variant/60 bg-surface/90 backdrop-blur-xl">
+      <div className="hidden border-b border-outline-variant/50 bg-surface-container px-4 py-2 text-xs font-semibold text-secondary sm:block">
+        <div className="mx-auto max-w-7xl text-center">{announcementText}</div>
       </div>
 
-      <nav className="border-b border-outline-variant/30 px-4 py-4 sm:py-6">
+      <nav className="px-4 py-4 sm:py-5">
         <div className="mx-auto max-w-7xl">
           <div className="flex items-center justify-between gap-4">
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="rounded-lg p-2 transition hover:bg-surface-container md:hidden"
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
+            <div className="flex items-center gap-2 md:hidden">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="air-card rounded-full p-2.5 transition hover:scale-95"
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
+              <button
+                onClick={openMobileSearch}
+                className="air-card rounded-full p-2.5 transition hover:scale-95"
+                aria-label="Search"
+              >
+                <Search className="h-5 w-5" />
+              </button>
+            </div>
 
-            <Link href={`/${storeSlug}`} className="absolute left-1/2 -translate-x-1/2 md:relative md:translate-x-0">
-              <div className="text-center md:text-left">
-                <h1 className="display-title text-xl tracking-tight text-foreground md:text-2xl">{store?.name || "Store"}</h1>
+            <Link href={`/${storeSlug}`} className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0">
+              <div className="flex items-center gap-2 text-center md:text-left">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-bold text-on-primary">E</span>
+                <h1 className="display-title text-xl text-foreground md:text-2xl">{store?.name || "Ecommify"}</h1>
               </div>
             </Link>
 
-            <div className="flex items-center gap-4 md:gap-6">
-              <button className="hidden rounded-lg p-2 transition hover:bg-surface-container sm:block" aria-label="Search">
-                <Search className="h-5 w-5 text-foreground" />
+            <div className="hidden flex-1 px-5 md:block">
+              <form onSubmit={handleSearch} className="mx-auto flex max-w-xl">
+                <div
+                  className="air-card flex h-12 w-full items-center rounded-full px-4 transition hover:shadow-[rgba(0,0,0,0.08)_0px_4px_12px]"
+                  style={{ border: 'none', borderRadius: '28px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', background: 'var(--surface)' }}
+                >
+                  <Search className="h-4 w-4 shrink-0 text-secondary" />
+                  <input
+                    type="search"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search products..."
+                    className="header-search-input ml-3 flex-1 bg-transparent text-sm font-medium text-foreground placeholder:text-secondary/70 outline-none"
+                    style={{ border: 'none', outline: 'none', background: 'transparent', WebkitAppearance: 'none' }}
+                  />
+                  {searchQuery && (
+                    <button
+                      type="submit"
+                      className="ml-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary transition hover:bg-primary/90"
+                      aria-label="Submit search"
+                    >
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
+
+            <div className="flex items-center gap-3 md:gap-4">
+              <button className="hidden rounded-full p-2 text-secondary transition hover:bg-surface-container md:inline-flex" aria-label="Language">
+                <Globe className="h-5 w-5" />
               </button>
 
               <Link
                 href={isAuthenticated ? `/${storeSlug}/account` : `/${storeSlug}/login`}
-                className="rounded-lg p-2 transition hover:bg-surface-container"
+                className="air-card inline-flex rounded-full p-2.5"
                 aria-label="Account"
               >
-                <UserRound className="h-5 w-5 text-foreground" />
+                {isAuthenticated && customer ? (
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-on-primary">
+                    {customer.first_name?.[0]?.toUpperCase() ?? <UserRound className="h-3 w-3" />}
+                  </span>
+                ) : (
+                  <UserRound className="h-5 w-5 text-foreground" />
+                )}
               </Link>
 
               <Link
                 href={`/${storeSlug}/cart`}
-                className="relative rounded-lg p-2 transition hover:bg-surface-container"
+                className="air-card relative inline-flex rounded-full p-2.5"
                 aria-label="Cart"
               >
                 <ShoppingBag className="h-5 w-5 text-foreground" />
-                <span className="absolute -right-1 -top-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-on-primary">
-                  0
-                </span>
+                {cartCount > 0 && (
+                  <span className="absolute -right-1 -top-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-on-primary shadow">
+                    {cartCount > 99 ? "99+" : cartCount}
+                  </span>
+                )}
               </Link>
             </div>
           </div>
 
-          <div className="mt-6 hidden items-center justify-center gap-8 md:flex">
-            <Link href={`/${storeSlug}`} className="text-sm font-medium text-secondary transition hover:text-foreground">
-              Home
-            </Link>
-            <Link
-              href={`/${storeSlug}/products`}
-              className="text-sm font-medium text-secondary transition hover:text-foreground"
-            >
-              Shop All
-            </Link>
-            {categories.slice(0, 4).map((cat) => (
-              <Link
-                key={cat.id}
-                href={`/${storeSlug}/products?category=${cat.id}`}
-                className="text-sm font-medium text-secondary transition hover:text-foreground"
+          {/* Mobile search bar (expands below header row) */}
+          {mobileSearchOpen && (
+            <form onSubmit={handleSearch} className="mt-3 flex items-center gap-2 md:hidden">
+              <div
+                className="air-card flex flex-1 items-center rounded-full px-4 py-2.5"
+                style={{ border: 'none', borderRadius: '28px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', background: 'var(--surface)' }}
               >
-                {cat.name}
-              </Link>
-            ))}
-            {categories.length > 4 && (
+                <Search className="h-4 w-4 shrink-0 text-secondary" />
+                <input
+                  ref={searchInputRef}
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search products..."
+                  className="header-search-input ml-3 flex-1 bg-transparent text-sm font-medium text-foreground placeholder:text-secondary/70 outline-none"
+                  style={{ border: 'none', outline: 'none', background: 'transparent', WebkitAppearance: 'none' }}
+                />
+              </div>
+              <button
+                type="submit"
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary"
+                aria-label="Submit search"
+              >
+                <ArrowRight className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileSearchOpen(false)}
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-outline-variant text-secondary"
+                aria-label="Close search"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </form>
+          )}
+
+          <div className="mt-4 hidden items-center gap-3 overflow-x-auto pb-1 md:flex">
+            {themedMenuItems ? (
+              themedMenuItems.map((item, index) => (
+                <Link key={`${item.label}-${index}`} href={resolveThemedPath(storeSlug, item.href)} className="air-pill whitespace-nowrap">
+                  {item.label}
+                </Link>
+              ))
+            ) : (
+              <>
+                <Link href={`/${storeSlug}`} className="air-pill whitespace-nowrap">
+                  Home
+                </Link>
+                <Link href={`/${storeSlug}/products`} className="air-pill whitespace-nowrap">
+                  Shop All
+                </Link>
+                {categories.slice(0, 4).map((cat) => (
+                  <Link
+                    key={cat.id}
+                    href={`/${storeSlug}/products?category=${cat.id}`}
+                    className="air-pill whitespace-nowrap"
+                  >
+                    {cat.name}
+                  </Link>
+                ))}
+              </>
+            )}
+
+            {megaGroups.length > 0 ? (
               <div className="group relative">
-                <button className="text-sm font-medium text-secondary transition hover:text-foreground">More</button>
+                <button className="air-pill">More</button>
                 <div className="absolute left-0 top-full hidden pt-2 group-hover:block">
-                  <div className="rounded-lg border border-outline-variant bg-surface shadow-lg">
+                  <div className="air-card min-w-56 space-y-3 rounded-2xl p-3">
+                    {megaGroups.map((group) => (
+                      <div key={group.title}>
+                        <p className="mb-1 px-2 text-xs font-bold uppercase tracking-wide text-secondary">{group.title}</p>
+                        <div className="space-y-1">
+                          {group.links.map((link, index) => (
+                            <Link
+                              key={`${group.title}-${link.label}-${index}`}
+                              href={resolveThemedPath(storeSlug, link.href)}
+                              className="block rounded-xl px-3 py-2 text-sm font-semibold text-secondary transition hover:bg-surface-container hover:text-foreground"
+                            >
+                              {link.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : categories.length > 4 && (
+              <div className="group relative">
+                <button className="air-pill">More</button>
+                <div className="absolute left-0 top-full hidden pt-2 group-hover:block">
+                  <div className="air-card min-w-40 rounded-2xl p-1">
                     {categories.slice(4).map((cat) => (
                       <Link
                         key={cat.id}
                         href={`/${storeSlug}/products?category=${cat.id}`}
-                        className="block px-4 py-2 text-sm text-secondary transition first:rounded-t-lg last:rounded-b-lg hover:bg-surface-container"
+                        className="block rounded-xl px-4 py-2 text-sm font-semibold text-secondary transition hover:bg-surface-container hover:text-foreground"
                       >
                         {cat.name}
                       </Link>
@@ -122,24 +369,38 @@ export function Header({ storeSlug }: HeaderProps) {
           </div>
 
           {mobileMenuOpen && (
-            <div className="mt-6 flex flex-col gap-3 md:hidden">
-              <Link
-                href={`/${storeSlug}`}
-                className="rounded px-2 py-2 text-sm font-medium text-secondary transition hover:bg-surface-container hover:text-foreground"
-              >
-                Home
-              </Link>
-              <Link
-                href={`/${storeSlug}/products`}
-                className="rounded px-2 py-2 text-sm font-medium text-secondary transition hover:bg-surface-container hover:text-foreground"
-              >
-                Shop All
-              </Link>
+            <div className="air-card mt-5 flex flex-col gap-3 rounded-3xl p-5 md:hidden">
+              {themedMenuItems ? (
+                themedMenuItems.map((item, index) => (
+                  <Link
+                    key={`${item.label}-${index}`}
+                    href={resolveThemedPath(storeSlug, item.href)}
+                    className="air-pill"
+                  >
+                    {item.label}
+                  </Link>
+                ))
+              ) : (
+                <>
+                  <Link
+                    href={`/${storeSlug}`}
+                    className="air-pill"
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    href={`/${storeSlug}/products`}
+                    className="air-pill"
+                  >
+                    Shop All
+                  </Link>
+                </>
+              )}
               {categories.map((cat) => (
                 <Link
                   key={cat.id}
                   href={`/${storeSlug}/products?category=${cat.id}`}
-                  className="rounded px-2 py-2 text-sm text-secondary transition hover:bg-surface-container hover:text-foreground"
+                  className="air-pill"
                 >
                   {cat.name}
                 </Link>
@@ -148,7 +409,7 @@ export function Header({ storeSlug }: HeaderProps) {
               {isAuthenticated ? (
                 <button
                   onClick={logout}
-                  className="rounded px-2 py-2 text-left text-sm font-medium text-error transition hover:bg-red-50"
+                  className="rounded-xl border border-red-200 px-4 py-2 text-left text-sm font-semibold text-error"
                 >
                   Logout
                 </button>
@@ -156,13 +417,13 @@ export function Header({ storeSlug }: HeaderProps) {
                 <>
                   <Link
                     href={`/${storeSlug}/login`}
-                    className="rounded px-2 py-2 text-sm font-medium text-secondary transition hover:bg-surface-container hover:text-foreground"
+                    className="air-pill"
                   >
                     Login
                   </Link>
                   <Link
                     href={`/${storeSlug}/register`}
-                    className="rounded px-2 py-2 text-sm font-medium text-secondary transition hover:bg-surface-container hover:text-foreground"
+                    className="air-pill air-pill-active"
                   >
                     Register
                   </Link>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { Product } from "@/lib/types/product";
 import { useCart } from "@/context/CartContext";
-import { ShoppingBag } from "lucide-react";
+import { Heart, ShoppingBag } from "lucide-react";
 
 export function ProductCard({ product, storeSlug }: { product: Product; storeSlug?: string }) {
   const image = product.images?.[0]?.image_url || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=500&fit=crop";
@@ -12,25 +12,34 @@ export function ProductCard({ product, storeSlug }: { product: Product; storeSlu
 
   return (
     <Link href={`/${storeSlug}/products/${product.id}`}>
-      <article className="group flex flex-col h-full overflow-hidden rounded-lg bg-surface transition-all hover:shadow-[0_12px_24px_rgba(0,0,0,0.08)]">
+      <article className="group air-card flex h-full flex-col overflow-hidden rounded-[22px] transition-all hover:-translate-y-0.5 hover:shadow-[rgba(0,0,0,0.08)_0px_4px_12px]">
         {/* Image Container */}
-        <div className="relative h-72 overflow-hidden bg-surface-low">
+        <div className="relative h-72 overflow-hidden bg-surface-low md:h-80">
           <img
             src={image}
             alt={product.name}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
+
+          <button
+            type="button"
+            onClick={(e) => e.preventDefault()}
+            className="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-foreground shadow"
+            aria-label="Save product"
+          >
+            <Heart className="h-4 w-4" />
+          </button>
           
           {/* Stock Badge */}
           {product.stock !== undefined && (
             <>
               {product.stock === 0 && (
-                <div className="absolute inset-0 bg-foreground/30 flex items-center justify-center">
-                  <span className="text-on-primary font-medium">Out of Stock</span>
+                <div className="absolute inset-0 flex items-center justify-center bg-foreground/30">
+                  <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-foreground">Out of Stock</span>
                 </div>
               )}
               {product.stock > 0 && product.stock < 5 && (
-                <span className="absolute right-4 top-4 bg-error text-on-primary px-3 py-1 rounded-full text-xs font-semibold">
+                <span className="absolute left-3 top-3 rounded-full bg-error px-3 py-1 text-xs font-semibold text-on-primary">
                   Only {product.stock} left
                 </span>
               )}
@@ -42,25 +51,25 @@ export function ProductCard({ product, storeSlug }: { product: Product; storeSlu
         <div className="flex flex-1 flex-col p-5">
           {/* Category */}
           {product.category_name && (
-            <p className="mb-2 text-xs font-medium uppercase tracking-widest text-secondary">
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-secondary">
               {product.category_name}
             </p>
           )}
 
           {/* Product Name */}
-          <h3 className="headline-sm mb-3 line-clamp-2 text-foreground group-hover:text-secondary transition">
+          <h3 className="headline-sm mb-3 line-clamp-2 text-foreground group-hover:text-primary transition">
             {product.name}
           </h3>
 
           {/* Description */}
           {product.description && (
-            <p className="text-sm text-secondary line-clamp-2 mb-4 flex-grow">
+            <p className="mb-4 flex-grow line-clamp-2 text-sm text-secondary">
               {product.description}
             </p>
           )}
 
           {/* Footer: Price & Button */}
-          <div className="flex items-center justify-between pt-4 border-t border-outline-variant/30">
+          <div className="flex items-center justify-between border-t border-outline-variant/50 pt-4">
             <span className="text-lg font-bold text-foreground">
               ${price.toFixed(2)}
             </span>
@@ -73,7 +82,7 @@ export function ProductCard({ product, storeSlug }: { product: Product; storeSlu
                   console.error("Failed to add item to cart", error);
                 });
               }}
-              className="inline-flex items-center justify-center gap-2 bg-primary px-4 py-2 rounded-lg text-on-primary font-medium text-sm hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <ShoppingBag className="h-4 w-4" />
               {isLoading ? "Adding..." : "Add"}

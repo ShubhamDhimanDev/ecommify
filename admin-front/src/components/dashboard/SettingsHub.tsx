@@ -47,6 +47,15 @@ export function SettingsHub() {
 
       <Card padding="md">
         <div className="space-y-2">
+          <Link href={`/${activeStore.slug}/themes`} className="block text-sm font-medium text-primary-600 hover:underline">
+            Theme customization
+          </Link>
+          <p className="text-xs text-zinc-500">Activate themes and edit sections visually with no code.</p>
+        </div>
+      </Card>
+
+      <Card padding="md">
+        <div className="space-y-2">
           <Link href="/dashboard/security" className="block text-sm font-medium text-primary-600 hover:underline">
             Security settings
           </Link>

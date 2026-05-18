@@ -1,29 +1,26 @@
-import { CategoryNav } from "@/components/sections/CategoryNav";
-import { FeaturedProducts } from "@/components/sections/FeaturedProducts";
-import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { detectTenantContext } from "@/lib/theme/engine/tenant";
 
-export default function Home() {
+export default async function Home() {
+  const tenantContext = await detectTenantContext();
+
+  if (tenantContext.storeSlug) {
+    redirect(`/${tenantContext.storeSlug}`);
+  }
+
   return (
     <div className="space-y-12 p-4 md:p-8">
-      <section className="relative overflow-hidden rounded-2xl border border-outline-variant/50 bg-surface-container py-20 px-4">
+      <section className="air-card relative overflow-hidden rounded-[28px] bg-surface-container py-20 px-4">
         <div className="mx-auto max-w-4xl text-center">
-          <h1 className="display-title mb-4 text-5xl text-foreground">Welcome to Ecommify</h1>
-          <p className="mb-8 text-xl text-secondary">
-            Discover products from multi-tenant sellers using a dynamic, API-driven storefront theme.
+          <h1 className="display-lg-mobile mb-4 text-foreground">Tenant-aware storefront ready</h1>
+          <p className="mb-8 text-lg font-semibold text-secondary">
+            Open a tenant route to render a section-based theme, for example /demo-store.
           </p>
-          <a
-            href="#products"
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-3 font-semibold text-on-primary hover:opacity-90"
-          >
-            Start Shopping <ArrowRight className="h-4 w-4" />
-          </a>
+          <Link href="/demo-store" className="btn-primary">
+            Open demo store
+          </Link>
         </div>
-      </section>
-
-      <CategoryNav />
-
-      <section id="products">
-        <FeaturedProducts />
       </section>
     </div>
   );

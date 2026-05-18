@@ -1,16 +1,72 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { productApi } from "@/lib/api/client";
+import { useParams, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { productApi, themeApi } from "@/lib/api/client";
 import { useCart } from "@/context/CartContext";
 import type { Product } from "@/lib/types/product";
-import { ShieldCheck, Truck, Undo2, Heart, Share2 } from "lucide-react";
+import { ShieldCheck, Truck, Undo2, Heart } from "lucide-react";
+
+type TrustItem = {
+  title?: string;
+  description?: string;
+};
+
+type ProductDetailThemeSettings = {
+  quantityLabel?: string;
+  addToCartLabel?: string;
+  relatedTitle?: string;
+  trustItems?: TrustItem[];
+};
+
+function extractProductDetailSettings(payload: unknown): ProductDetailThemeSettings | null {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  const root = (payload as { data?: unknown }).data ?? payload;
+  if (!root || typeof root !== "object") {
+    return null;
+  }
+
+  const config = (root as { config?: { pages?: Record<string, { sections?: Array<{ type?: string; settings?: Record<string, unknown> }> }> } }).config;
+  const sections = config?.pages?.["product-detail"]?.sections;
+
+  if (!Array.isArray(sections)) {
+    return null;
+  }
+
+  const layout = sections.find((section) => section?.type === "product-detail-layout");
+  const settings = layout?.settings;
+
+  if (!settings || typeof settings !== "object") {
+    return null;
+  }
+
+  const trustItems = Array.isArray(settings.trust_items)
+    ? settings.trust_items
+        .filter((item): item is { title?: unknown; description?: unknown } => Boolean(item) && typeof item === "object")
+        .map((item) => ({
+          title: typeof item.title === "string" ? item.title : undefined,
+          description: typeof item.description === "string" ? item.description : undefined,
+        }))
+    : undefined;
+
+  return {
+    quantityLabel: typeof settings.quantity_label === "string" ? settings.quantity_label : undefined,
+    addToCartLabel: typeof settings.add_to_cart_label === "string" ? settings.add_to_cart_label : undefined,
+    relatedTitle: typeof settings.related_title === "string" ? settings.related_title : undefined,
+    trustItems,
+  };
+}
 
 export default function ProductDetailPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const storeSlug = params?.storeSlug as string;
   const productId = params?.id as string;
+  const previewTheme = searchParams.get("preview_theme");
+  const previewPage = searchParams.get("preview_page");
   const { addItem, isLoading: cartLoading } = useCart();
 
   const [product, setProduct] = useState<Product | null>(null);
@@ -19,14 +75,9 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
   const [cartMessage, setCartMessage] = useState<string>("");
+  const [pageTheme, setPageTheme] = useState<ProductDetailThemeSettings | null>(null);
 
-  useEffect(() => {
-    if (storeSlug && productId) {
-      loadProduct();
-    }
-  }, [storeSlug, productId]);
-
-  async function loadProduct() {
+  const loadProduct = useCallback(async () => {
     setLoading(true);
     try {
       const data = await productApi.getById(storeSlug, productId);
@@ -36,7 +87,29 @@ export default function ProductDetailPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [productId, storeSlug]);
+
+  useEffect(() => {
+    if (storeSlug && productId) {
+      void loadProduct();
+    }
+  }, [loadProduct, productId, storeSlug]);
+
+  useEffect(() => {
+    if (!storeSlug) {
+      return;
+    }
+
+    void themeApi
+      .getByStoreSlug(storeSlug, {
+        theme: previewTheme,
+        page: previewPage,
+      })
+      .then((payload) => {
+        setPageTheme(extractProductDetailSettings(payload));
+      })
+      .catch(() => null);
+  }, [previewPage, previewTheme, storeSlug]);
 
   async function handleAddToCart() {
     if (!product) return;
@@ -78,6 +151,13 @@ export default function ProductDetailPage() {
   const images = product.images || [];
   const mainImage = images[selectedImage]?.image_url || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=900&fit=crop";
   const price = parseFloat(String(product.price ?? 0));
+  const trustItems = pageTheme?.trustItems?.length
+    ? pageTheme.trustItems
+    : [
+        { title: "Free Shipping", description: "On orders over $75" },
+        { title: "Secure Payment", description: "100% protected" },
+        { title: "Easy Returns", description: "30-day guarantee" },
+      ];
 
   return (
     <>
@@ -145,7 +225,7 @@ export default function ProductDetailPage() {
               {/* Quantity & Actions */}
               <div className="mb-8 space-y-4">
                 <div className="flex items-center gap-4">
-                  <span className="text-sm font-medium text-secondary">Quantity:</span>
+                  <span className="text-sm font-medium text-secondary">{pageTheme?.quantityLabel || "Quantity:"}</span>
                   <div className="flex items-center rounded-lg border border-outline-variant/50">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -181,7 +261,7 @@ export default function ProductDetailPage() {
                     disabled={product.stock === 0 || addingToCart || cartLoading}
                     className="col-span-2 rounded-lg bg-primary px-6 py-4 font-medium text-on-primary hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {addingToCart ? "Adding..." : "Add to Cart"}
+                    {addingToCart ? "Adding..." : (pageTheme?.addToCartLabel || "Add to Cart")}
                   </button>
                   <button className="rounded-lg border border-outline-variant/50 px-4 py-4 text-foreground hover:bg-surface-container transition flex items-center justify-center">
                     <Heart className="h-5 w-5" />
@@ -191,21 +271,21 @@ export default function ProductDetailPage() {
 
               {/* Trust Badges */}
               <div className="space-y-4 pt-8 border-t border-outline-variant/30">
-                {[
-                  { icon: Truck, title: "Free Shipping", desc: "On orders over $50" },
-                  { icon: ShieldCheck, title: "Secure Payment", desc: "100% protected" },
-                  { icon: Undo2, title: "Easy Returns", desc: "30-day guarantee" },
-                ].map((badge, i) => (
-                  <div key={i} className="flex gap-3">
-                    <div className="flex-shrink-0">
-                      <badge.icon className="h-5 w-5 text-primary" />
+                {trustItems.map((badge, i) => {
+                  const Icon = i === 0 ? Truck : i === 1 ? ShieldCheck : Undo2;
+
+                  return (
+                    <div key={i} className="flex gap-3">
+                      <div className="flex-shrink-0">
+                        <Icon className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground">{badge.title || "Trust"}</p>
+                        <p className="text-sm text-secondary">{badge.description || ""}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium text-foreground">{badge.title}</p>
-                      <p className="text-sm text-secondary">{badge.desc}</p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -214,7 +294,7 @@ export default function ProductDetailPage() {
 
       {/* Related Products - Placeholder */}
       <div className="mx-auto max-w-7xl px-4 py-16">
-        <h2 className="headline-md text-foreground mb-8">You Might Also Like</h2>
+        <h2 className="headline-md text-foreground mb-8">{pageTheme?.relatedTitle || "You Might Also Like"}</h2>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="rounded-lg border border-outline-variant/30 bg-surface overflow-hidden hover:shadow-lg transition">

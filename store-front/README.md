@@ -16,6 +16,17 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Theme Support Toggle
+
+You can quickly disable dynamic theme engine calls and force a universal hardcoded storefront theme.
+
+1. Set `NEXT_PUBLIC_THEME_SUPPORT_ENABLED=false` in your env.
+2. Restart the Next.js server.
+
+Behavior:
+- `true` (default): storefront reads active/preview theme payload from API.
+- `false`: storefront bypasses theme API and always uses universal hardcoded defaults from `src/lib/theme/engine/defaults.ts`.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

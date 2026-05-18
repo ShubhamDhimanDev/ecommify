@@ -40,12 +40,12 @@ export function FeaturedProducts() {
     <section className="space-y-8 py-4">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <h2 className="headline-md text-foreground">Featured Collection</h2>
-          <p className="mt-2 text-secondary">Explore our curated selection of premium products.</p>
+          <h2 className="headline-md text-foreground">Featured Stays, but for products</h2>
+          <p className="mt-2 text-secondary">Explore the most loved picks from this store.</p>
         </div>
         <Link
           href={`/${storeSlug}/products`}
-          className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-secondary transition whitespace-nowrap"
+          className="btn-secondary whitespace-nowrap"
         >
           View All <MoveRight className="h-4 w-4" />
         </Link>

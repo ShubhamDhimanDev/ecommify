@@ -1,47 +1,159 @@
 "use client";
 
 import { useParams, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { productApi, categoryApi } from "@/lib/api/client";
+import { useCallback, useEffect, useState } from "react";
+import { productApi, categoryApi, themeApi } from "@/lib/api/client";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import type { Product, Category } from "@/lib/types/product";
 import { SlidersHorizontal, X } from "lucide-react";
+
+type ProductListThemeSettings = {
+  title?: string;
+  subtitle?: string;
+};
+
+type SortBy = "newest" | "price-low" | "price-high" | "popular";
+
+interface FiltersPanelProps {
+  categories: Category[];
+  selectedCategory: string | null;
+  onSelectCategory: (categoryId: string | null) => void;
+  onCloseMobileFilters?: () => void;
+}
+
+function FiltersPanel({ categories, selectedCategory, onSelectCategory, onCloseMobileFilters }: FiltersPanelProps) {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="label-caps mb-4 text-secondary">Categories</h3>
+        <div className="space-y-3">
+          <button
+            onClick={() => onSelectCategory(null)}
+            className={`block w-full rounded-lg px-3 py-2 text-left transition ${
+              !selectedCategory
+                ? "bg-primary font-medium text-on-primary"
+                : "text-secondary hover:text-foreground"
+            }`}
+          >
+            All Products
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => {
+                onSelectCategory(cat.id);
+                onCloseMobileFilters?.();
+              }}
+              className={`block w-full rounded-lg px-3 py-2 text-left transition ${
+                selectedCategory === cat.id
+                  ? "bg-primary font-medium text-on-primary"
+                  : "text-secondary hover:text-foreground"
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="border-t border-outline-variant/30 pt-6">
+        <h3 className="label-caps mb-4 text-secondary">Price Range</h3>
+        <div className="space-y-3">
+          {["Under $50", "$50 - $100", "$100 - $200", "Over $200"].map((range) => (
+            <label key={range} className="flex cursor-pointer items-center gap-3">
+              <input type="checkbox" className="rounded border border-outline-variant" />
+              <span className="text-sm text-secondary">{range}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="border-t border-outline-variant/30 pt-6">
+        <h3 className="label-caps mb-4 text-secondary">Availability</h3>
+        <label className="flex cursor-pointer items-center gap-3">
+          <input type="checkbox" className="rounded border border-outline-variant" defaultChecked />
+          <span className="text-sm text-secondary">In Stock</span>
+        </label>
+      </div>
+    </div>
+  );
+}
+
+function parseSortBy(value: string): SortBy {
+  return value === "price-low" || value === "price-high" || value === "popular" ? value : "newest";
+}
+
+function extractProductListSettings(payload: unknown): ProductListThemeSettings | null {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  const root = (payload as { data?: unknown }).data ?? payload;
+  if (!root || typeof root !== "object") {
+    return null;
+  }
+
+  const config = (root as { config?: { pages?: Record<string, { sections?: Array<{ type?: string; settings?: Record<string, unknown> }> }> } }).config;
+  const sections = config?.pages?.["product-list"]?.sections;
+
+  if (!Array.isArray(sections)) {
+    return null;
+  }
+
+  const heroSection = sections.find((section) => section?.type === "page-hero");
+  const settings = heroSection?.settings;
+
+  if (!settings || typeof settings !== "object") {
+    return null;
+  }
+
+  return {
+    title: typeof settings.title === "string" ? settings.title : undefined,
+    subtitle: typeof settings.subtitle === "string" ? settings.subtitle : undefined,
+  };
+}
 
 export default function StoreProductsPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const storeSlug = params?.storeSlug as string;
+  const previewTheme = searchParams.get("preview_theme");
+  const previewPage = searchParams.get("preview_page");
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState<"newest" | "price-low" | "price-high" | "popular">("newest");
+  const [sortBy, setSortBy] = useState<SortBy>("newest");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
     searchParams.get("category") || null
   );
+  const [searchQuery] = useState<string>(searchParams.get("search") || "");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [themePage, setThemePage] = useState<ProductListThemeSettings | null>(null);
 
-  useEffect(() => {
-    if (storeSlug) {
-      loadData();
-    }
-  }, [storeSlug, selectedCategory, sortBy]);
-
-  async function loadData() {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      // Load categories
-      const categoriesData = await categoryApi.list(storeSlug);
+      const [categoriesData, themePayload] = await Promise.all([
+        categoryApi.list(storeSlug),
+        themeApi.getByStoreSlug(storeSlug, {
+          theme: previewTheme,
+          page: previewPage,
+        }).catch(() => null),
+      ]);
       setCategories(categoriesData);
 
-      // Load products
+      if (themePayload) {
+        setThemePage(extractProductListSettings(themePayload));
+      }
+
       const filters: Record<string, unknown> = {};
       if (selectedCategory) filters.category_id = selectedCategory;
+      if (searchQuery) filters.search = searchQuery;
 
       const productsData = await productApi.list(storeSlug, filters);
       let productsList = productsData as Product[];
 
-      // Sort products
       switch (sortBy) {
         case "price-low":
           productsList = [...productsList].sort((a, b) => parseFloat(String(a.price)) - parseFloat(String(b.price)));
@@ -60,72 +172,28 @@ export default function StoreProductsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [previewPage, previewTheme, searchQuery, selectedCategory, sortBy, storeSlug]);
 
-  // Filter section component
-  const FilterSection = () => (
-    <div className="space-y-6">
-      <div>
-        <h3 className="label-caps mb-4 text-secondary">Categories</h3>
-        <div className="space-y-3">
-          <button
-            onClick={() => setSelectedCategory(null)}
-            className={`block w-full text-left px-3 py-2 rounded-lg transition ${
-              !selectedCategory
-                ? "bg-primary text-on-primary font-medium"
-                : "text-secondary hover:text-foreground"
-            }`}
-          >
-            All Products
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => {
-                setSelectedCategory(cat.id);
-                setMobileFiltersOpen(false);
-              }}
-              className={`block w-full text-left px-3 py-2 rounded-lg transition ${
-                selectedCategory === cat.id
-                  ? "bg-primary text-on-primary font-medium"
-                  : "text-secondary hover:text-foreground"
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="border-t border-outline-variant/30 pt-6">
-        <h3 className="label-caps mb-4 text-secondary">Price Range</h3>
-        <div className="space-y-3">
-          {["Under $50", "$50 - $100", "$100 - $200", "Over $200"].map((range) => (
-            <label key={range} className="flex items-center gap-3 cursor-pointer">
-              <input type="checkbox" className="rounded border border-outline-variant" />
-              <span className="text-sm text-secondary">{range}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <div className="border-t border-outline-variant/30 pt-6">
-        <h3 className="label-caps mb-4 text-secondary">Availability</h3>
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input type="checkbox" className="rounded border border-outline-variant" defaultChecked />
-          <span className="text-sm text-secondary">In Stock</span>
-        </label>
-      </div>
-    </div>
-  );
+  useEffect(() => {
+    if (storeSlug) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      void loadData();
+    }
+  }, [storeSlug, loadData]);
 
   return (
     <div className="flex flex-col min-h-screen">
       {/* Page Header */}
       <div className="border-b border-outline-variant/30 px-4 py-12 sm:px-6">
         <div className="mx-auto max-w-7xl">
-          <h1 className="headline-md text-foreground mb-2">All Products</h1>
-          <p className="text-secondary">Browse our complete collection of carefully curated items.</p>
+          <h1 className="headline-md text-foreground mb-2">
+            {searchQuery ? `Results for "${searchQuery}"` : (themePage?.title || "All Products")}
+          </h1>
+          <p className="text-secondary">
+            {searchQuery
+              ? `Showing products matching your search.`
+              : (themePage?.subtitle || "Browse our complete collection of carefully curated items.")}
+          </p>
         </div>
       </div>
 
@@ -155,7 +223,12 @@ export default function StoreProductsPage() {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <FilterSection />
+            <FiltersPanel
+              categories={categories}
+              selectedCategory={selectedCategory}
+              onSelectCategory={setSelectedCategory}
+              onCloseMobileFilters={() => setMobileFiltersOpen(false)}
+            />
           </div>
         )}
 
@@ -169,7 +242,11 @@ export default function StoreProductsPage() {
                   Filters
                 </h2>
               </div>
-              <FilterSection />
+              <FiltersPanel
+                categories={categories}
+                selectedCategory={selectedCategory}
+                onSelectCategory={setSelectedCategory}
+              />
             </div>
           </div>
 
@@ -182,7 +259,7 @@ export default function StoreProductsPage() {
               </p>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(parseSortBy(e.target.value))}
                 className="rounded-lg border border-outline-variant bg-surface px-4 py-2 text-sm text-foreground hover:border-outline transition"
               >
                 <option value="newest">Sort: Newest</option>
