@@ -189,6 +189,10 @@ textarea {
   background: #ffffff;
 }
 
+input {
+  border-radius:0px;
+}
+
 input:focus,
 select:focus,
 textarea:focus,

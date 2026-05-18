@@ -17,7 +17,7 @@ type SortBy = "newest" | "price-low" | "price-high" | "popular";
 interface FiltersPanelProps {
   categories: Category[];
   selectedCategory: string | null;
-  onSelectCategory: (categoryId: string | null) => void;
+  onSelectCategory: (categorySlug: string | null) => void;
   onCloseMobileFilters?: () => void;
 }
 
@@ -41,11 +41,11 @@ function FiltersPanel({ categories, selectedCategory, onSelectCategory, onCloseM
             <button
               key={cat.id}
               onClick={() => {
-                onSelectCategory(cat.id);
+                onSelectCategory(cat.slug);
                 onCloseMobileFilters?.();
               }}
               className={`block w-full rounded-lg px-3 py-2 text-left transition ${
-                selectedCategory === cat.id
+                selectedCategory === cat.slug
                   ? "bg-primary font-medium text-on-primary"
                   : "text-secondary hover:text-foreground"
               }`}
@@ -148,7 +148,7 @@ export default function StoreProductsPage() {
       }
 
       const filters: Record<string, unknown> = {};
-      if (selectedCategory) filters.category_id = selectedCategory;
+      if (selectedCategory) filters.category_slug = selectedCategory;
       if (searchQuery) filters.search = searchQuery;
 
       const productsData = await productApi.list(storeSlug, filters);

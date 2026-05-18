@@ -12,6 +12,7 @@ use App\Models\Theme;
 use App\Services\ThemeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use RuntimeException;
 
 class PublicController extends Controller
@@ -41,12 +42,17 @@ class PublicController extends Controller
             return response()->json(['message' => 'Store not found.'], 404);
         }
 
-        $categories = Category::query()
-            ->withoutGlobalScopes()
-            ->where('tenant_id', $store->id)
-            ->orderBy('depth')
-            ->orderBy('name')
-            ->get();
+        $categories = Cache::remember(
+            sprintf('public:store:%s:categories:v2', $store->id),
+            now()->addMinutes(10),
+            static fn () => Category::query()
+                ->withoutGlobalScopes()
+                ->where('tenant_id', $store->id)
+                ->orderBy('depth')
+                ->orderBy('name')
+                ->get()
+                ->toArray()
+        );
 
         return response()->json(['categories' => $categories]);
     }
@@ -62,16 +68,41 @@ class PublicController extends Controller
             return response()->json(['message' => 'Store not found.'], 404);
         }
 
+        $searchTerm = $request->string('search')->trim()->value();
+        if ($searchTerm === '') {
+            $searchTerm = $request->string('q')->trim()->value();
+        }
+
+        $categorySlug = $request->string('category_slug')->trim()->value();
+        if ($categorySlug === '') {
+            $categorySlug = $request->string('category')->trim()->value();
+        }
+
+        $categoryId = null;
+        if ($request->filled('category_id')) {
+            $categoryId = $request->string('category_id')->value();
+        } elseif ($categorySlug !== '') {
+            $categoryId = Category::query()
+                ->withoutGlobalScopes()
+                ->where('tenant_id', $store->id)
+                ->where('slug', $categorySlug)
+                ->value('id');
+        }
+
         $products = Product::query()
             ->withoutGlobalScopes()
             ->with([
+                'category:id,name,slug',
                 'images:id,product_id,image_url,media_type,storage_path,alt_text,sort_order,file_size,mime_type,disk',
                 'variants:id,parent_product_id,name,sku,price,stock,description,meta_title,meta_description,meta_keywords,specifications',
                 'tags:id,product_id,tag_name',
             ])
             ->where('tenant_id', $store->id)
-            ->when($request->filled('q'), function ($query) use ($request): void {
-                $q = '%'.$request->string('q').'%';
+            ->when($categoryId, function ($query) use ($categoryId): void {
+                $query->where('category_id', $categoryId);
+            })
+            ->when($searchTerm !== '', function ($query) use ($searchTerm): void {
+                $q = '%'.$searchTerm.'%';
                 $query->where(function ($inner) use ($q): void {
                     $inner->where('name', 'like', $q)
                         ->orWhere('sku', 'like', $q);

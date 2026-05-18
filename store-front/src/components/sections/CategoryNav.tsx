@@ -51,7 +51,7 @@ export function CategoryNav() {
           {categories.map((category) => (
             <Link
               key={category.id}
-              href={`/${storeSlug}/products?category=${category.id}`}
+              href={`/${storeSlug}/products?category=${encodeURIComponent(category.slug)}`}
               className="air-pill whitespace-nowrap"
             >
               {category.name}
